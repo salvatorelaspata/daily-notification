@@ -14,15 +14,15 @@ export async function migrateDbIfNeeded(db: SQLiteDatabase) {
       // notifications
       await db.execAsync(`
         CREATE TABLE notifications (
-          id INTEGER PRIMARY KEY AUTOINCREMENT,
-          title TEXT NOT NULL,
-          description TEXT,
-          repeat_count INTEGER NOT NULL,  -- Numero di ripetizioni nell'anno
-          interval_days INTEGER NOT NULL,   -- Intervallo di giorni tra le notifiche
-          days_of_week TEXT,                -- Giorni della settimana (es. "1,2,3" per Lunedì, Martedì, Mercoledì)
-          notification_time TEXT NOT NULL,  -- Orario della notifica (es. "morning", "afternoon", "evening", "09:00-10:00")
-          created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-          is_notified BOOLEAN DEFAULT FALSE  -- Indica se la notifica è già stata inviata
+          id INTEGER PRIMARY KEY AUTOINCREMENT, -- ID della notifica
+          title TEXT NOT NULL,                  -- Titolo della notifica
+          description TEXT,                     -- Descrizione della notifica
+          repeat_count INTEGER NOT NULL,        -- Numero di ripetizioni nell'anno
+          interval_days INTEGER NOT NULL,       -- Intervallo di giorni tra le notifiche
+          days_of_week TEXT,                    -- Giorni della settimana (es. "1,2,3" per Lunedì, Martedì, Mercoledì)
+          notification_time TEXT NOT NULL,      -- Orario della notifica (es. "morning", "afternoon", "evening", "09:00-10:00")
+          created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, -- Data di creazione della notifica
+          is_notified BOOLEAN DEFAULT FALSE     -- Indica se la notifica è già stata inviata
         );
       `);
       // scheduled_notifications

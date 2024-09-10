@@ -17,7 +17,7 @@ export default function TabLayout() {
     >
       {/* create tabs for Notifications, AllNotifications and Calendar */}
       <Tabs.Screen
-        name="today"
+        name="index"
         options={{
           title: "Today",
           tabBarIcon: ({ color, focused }) => (

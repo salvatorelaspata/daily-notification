@@ -1,6 +1,6 @@
 import type { SQLiteDatabase } from "expo-sqlite";
 
-export const getTodaysNotifications = async (db: SQLiteDatabase) => {
+export const getTodayNotifications = async (db: SQLiteDatabase) => {
   const today = new Date().toISOString().split("T")[0]; // Formato YYYY-MM-DD
   const statement = await db.prepareAsync(
     "SELECT * FROM scheduled_notifications WHERE scheduled_date = ?"

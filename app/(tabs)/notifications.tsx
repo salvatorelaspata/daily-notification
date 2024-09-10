@@ -1,38 +1,40 @@
 import React from "react";
-import {
-  View,
-  FlatList,
-  Text,
-  StyleSheet,
-  TouchableOpacity,
-} from "react-native";
+import { View, FlatList, Text, StyleSheet, Image } from "react-native";
 
 import { format } from "date-fns";
-import { Reminder } from "@/types/types";
+import { Notification } from "@/types/types";
 import { useSQLiteContext } from "expo-sqlite";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { getAllNotifications } from "@/db/read";
 
 const Notifications: React.FC = () => {
   const db = useSQLiteContext();
-  const [reminders, setReminders] = React.useState<Reminder[]>([]);
+  const [reminders, setReminders] = React.useState<Notification[]>([]);
 
-  const renderItem = ({ item }: { item: Reminder }) => (
-    <SafeAreaView style={styles.reminderItem}>
-      <Text style={styles.reminderTitle}>{item.title}</Text>
-      <Text style={styles.reminderFrequency}>{item.frequency}</Text>
-      <Text style={styles.reminderTime}>{item.time}</Text>
-      <Text style={styles.reminderCreatedAt}>
-        Created: {format(new Date(item.createdAt), "MMM d, yyyy")}
-      </Text>
-      <View style={styles.actionButtons}>
-        <TouchableOpacity style={styles.editButton}>
-          <Text style={styles.buttonText}>Edit</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.deleteButton}>
-          <Text style={styles.buttonText}>Delete</Text>
-        </TouchableOpacity>
-      </View>
-    </SafeAreaView>
+  React.useEffect(() => {
+    async function getReminders() {
+      try {
+        const result = await getAllNotifications(db);
+        if (result) setReminders(result as Notification[]);
+      } catch (error) {
+        console.error("Error while getting all notifications", error);
+      }
+    }
+    getReminders();
+  }, []);
+
+  const renderItem = ({ item }: { item: Notification }) => (
+    <View style={styles.notificationItem}>
+      <Text>{item.id}</Text>
+      <Text>{item.title}</Text>
+      <Text>{item.description}</Text>
+      <Text>{item.repeat_count}</Text>
+      <Text>{item.interval_days}</Text>
+      <Text>{item.days_of_week}</Text>
+      <Text>{item.notification_time}</Text>
+      <Text>{format(item.created_at, "yyyy-MM-dd HH:mm")}</Text>
+      <Text>{item.is_notified}</Text>
+    </View>
   );
 
   return (
@@ -42,9 +44,15 @@ const Notifications: React.FC = () => {
         keyExtractor={(item) => item?.id?.toString() ?? ""}
         renderItem={renderItem}
         ListEmptyComponent={
-          <Text style={styles.emptyText}>
-            No reminders have been added yet.
-          </Text>
+          <View style={styles.container}>
+            <Text style={styles.emptyText}>
+              No reminders have been added yet.
+            </Text>
+            <Image
+              source={require("@/assets/images/no-record-found.png")}
+              style={{ alignSelf: "center" }}
+            />
+          </View>
         }
       />
     </SafeAreaView>
@@ -57,27 +65,11 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
     padding: 16,
   },
-  reminderItem: {
+  notificationItem: {
     backgroundColor: "#f4f4f4",
     padding: 12,
     marginVertical: 8,
     borderRadius: 8,
-  },
-  reminderTitle: {
-    fontSize: 16,
-    fontWeight: "bold",
-  },
-  reminderFrequency: {
-    fontSize: 14,
-    color: "#666",
-  },
-  reminderTime: {
-    fontSize: 14,
-    color: "#666",
-  },
-  reminderCreatedAt: {
-    fontSize: 12,
-    color: "#999",
   },
   actionButtons: {
     flexDirection: "row",

@@ -1,13 +1,31 @@
 import Ionicons from "@expo/vector-icons/Ionicons";
-import { StyleSheet, Image, Platform } from "react-native";
+import { StyleSheet } from "react-native";
 
-import { Collapsible } from "@/components/Collapsible";
-import { ExternalLink } from "@/components/ExternalLink";
+// import { Collapsible } from "@/components/Collapsible";
+// import { ExternalLink } from "@/components/ExternalLink";
 import ParallaxScrollView from "@/components/ParallaxScrollView";
 import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
+import { useEffect, useState } from "react";
+import { useSQLiteContext } from "expo-sqlite";
 
 export default function Settings() {
+  const [version, setVersion] = useState("");
+  const db = useSQLiteContext();
+
+  useEffect(() => {
+    async function setup() {
+      try {
+        const result = await db.getFirstAsync<{ "sqlite_version()": string }>(
+          "SELECT sqlite_version()"
+        );
+        if (result) setVersion(result["sqlite_version()"]);
+      } catch (error) {
+        console.error("Error while getting SQLite version", error);
+      }
+    }
+    setup();
+  }, []);
   return (
     <ParallaxScrollView
       headerBackgroundColor={{ light: "#D0D0D0", dark: "#353636" }}
@@ -16,12 +34,19 @@ export default function Settings() {
       }
     >
       <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Explore</ThemedText>
+        <ThemedText type="title">Settings</ThemedText>
       </ThemedView>
       <ThemedText>
-        This app includes example code to help you get started.
+        This app help yout to manage your reminders and notifications.
       </ThemedText>
-      <Collapsible title="File-based routing">
+
+      <ThemedView
+        style={{ flexDirection: "row", justifyContent: "space-between" }}
+      >
+        <ThemedText>SQLite version: </ThemedText>
+        <ThemedText type="defaultSemiBold">{version}</ThemedText>
+      </ThemedView>
+      {/* <Collapsible title="File-based routing">
         <ThemedText>
           This app has two screens:{" "}
           <ThemedText type="defaultSemiBold">app/(tabs)/index.tsx</ThemedText>{" "}
@@ -105,7 +130,7 @@ export default function Settings() {
             </ThemedText>
           ),
         })}
-      </Collapsible>
+      </Collapsible> */}
     </ParallaxScrollView>
   );
 }
