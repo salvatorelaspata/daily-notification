@@ -6,19 +6,18 @@ import {
   StyleSheet,
   TouchableOpacity,
 } from "react-native";
-import { RouteProp } from "@react-navigation/native";
+
 import { format } from "date-fns";
 import { Reminder } from "@/types/types";
+import { useSQLiteContext } from "expo-sqlite";
+import { SafeAreaView } from "react-native-safe-area-context";
 
-type AllNotificationsTabProps = {
-  route: RouteProp<{ params: { reminders: Reminder[] } }, "params">;
-};
-
-const AllNotificationsTab: React.FC<AllNotificationsTabProps> = ({ route }) => {
-  const { reminders } = route.params;
+const Notifications: React.FC = () => {
+  const db = useSQLiteContext();
+  const [reminders, setReminders] = React.useState<Reminder[]>([]);
 
   const renderItem = ({ item }: { item: Reminder }) => (
-    <View style={styles.reminderItem}>
+    <SafeAreaView style={styles.reminderItem}>
       <Text style={styles.reminderTitle}>{item.title}</Text>
       <Text style={styles.reminderFrequency}>{item.frequency}</Text>
       <Text style={styles.reminderTime}>{item.time}</Text>
@@ -33,14 +32,14 @@ const AllNotificationsTab: React.FC<AllNotificationsTabProps> = ({ route }) => {
           <Text style={styles.buttonText}>Delete</Text>
         </TouchableOpacity>
       </View>
-    </View>
+    </SafeAreaView>
   );
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
       <FlatList
         data={reminders}
-        keyExtractor={(item) => item.id.toString()}
+        keyExtractor={(item) => item?.id?.toString() ?? ""}
         renderItem={renderItem}
         ListEmptyComponent={
           <Text style={styles.emptyText}>
@@ -48,7 +47,7 @@ const AllNotificationsTab: React.FC<AllNotificationsTabProps> = ({ route }) => {
           </Text>
         }
       />
-    </View>
+    </SafeAreaView>
   );
 };
 
@@ -110,4 +109,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default AllNotificationsTab;
+export default Notifications;

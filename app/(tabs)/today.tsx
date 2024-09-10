@@ -3,12 +3,13 @@ import { View, FlatList, Text, StyleSheet } from "react-native";
 import { RouteProp } from "@react-navigation/native";
 import { Reminder } from "@/types/types";
 import { useSQLiteContext } from "expo-sqlite";
+import { SafeAreaView } from "react-native-safe-area-context";
 
-type NotificationsTabProps = {
+type TodayProps = {
   route: RouteProp<{ params: { reminders: Reminder[] } }, "params">;
 };
 
-const NotificationsTab: React.FC<NotificationsTabProps> = ({ route }) => {
+const Today: React.FC<TodayProps> = () => {
   const db = useSQLiteContext();
   const [version, setVersion] = useState("");
   const [reminders, setReminders] = useState<Reminder[]>([]);
@@ -36,7 +37,7 @@ const NotificationsTab: React.FC<NotificationsTabProps> = ({ route }) => {
   };
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
       <Text style={{ textAlign: "center", marginBottom: 16 }}>
         SQLite version: {version}
       </Text>
@@ -55,7 +56,7 @@ const NotificationsTab: React.FC<NotificationsTabProps> = ({ route }) => {
           </Text>
         }
       />
-    </View>
+    </SafeAreaView>
   );
 };
 
@@ -87,4 +88,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default NotificationsTab;
+export default Today;
