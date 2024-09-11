@@ -1,5 +1,5 @@
 export type Notification = {
-  id: number;
+  id?: number;
   title: string;
   description?: string;
   repeat_count: number;

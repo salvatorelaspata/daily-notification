@@ -17,7 +17,7 @@ export default function TabLayout() {
     >
       {/* create tabs for Notifications, AllNotifications and Calendar */}
       <Tabs.Screen
-        name="index"
+        name="(index)"
         options={{
           title: "Today",
           tabBarIcon: ({ color, focused }) => (
@@ -40,6 +40,7 @@ export default function TabLayout() {
           ),
         }}
       />
+
       <Tabs.Screen
         name="calendar"
         options={{

@@ -7,11 +7,38 @@ import { useSQLiteContext } from "expo-sqlite";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { getTodayNotifications } from "@/db/read";
 import { ThemedText } from "@/components/ThemedText";
+import FloatingActionButton, {
+  FloatingAction,
+} from "@/components/FloatingActionButton";
+import { notificationActions, notificationState } from "@/store/notification";
+import { useSnapshot } from "valtio";
+import { Href, useRouter } from "expo-router";
 
 const Today: React.FC = () => {
   const db = useSQLiteContext();
   const [reminders, setReminders] = React.useState<Notification[]>([]);
 
+  const { showModalCreate, hideModalCreate } = notificationActions;
+  const router = useRouter();
+  const actions: FloatingAction[] = [
+    // {
+    //   icon: "checkmark",
+    //   text: "Inventario",
+    //   onPress: () => console.log("Inventario"),
+    // },
+    // {
+    //   icon: "qr-code",
+    //   text: "Cambio ubicazione",
+    //   onPress: () => console.log("Cambio ubicazione"),
+    // },
+    {
+      icon: "add",
+      text: "Nuovo",
+      onPress: () => {
+        router.navigate("/new" as Href);
+      },
+    },
+  ];
   React.useEffect(() => {
     async function getReminders() {
       try {
@@ -103,6 +130,7 @@ const Today: React.FC = () => {
         renderEmptyDate={() => <View />}
         rowHasChanged={(r1: any, r2: any) => r1.name !== r2.name}
       />
+      <FloatingActionButton actions={actions} />
     </SafeAreaView>
   );
 };
