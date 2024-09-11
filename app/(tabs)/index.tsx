@@ -83,7 +83,7 @@ const Today: React.FC = () => {
   };
   return (
     <SafeAreaView style={styles.container}>
-      <FlatList
+      {/* <FlatList
         data={reminders}
         keyExtractor={(item) => item?.id?.toString() ?? ""}
         renderItem={renderItem}
@@ -94,7 +94,7 @@ const Today: React.FC = () => {
             </Text>
           </View>
         }
-      />
+      /> */}
       {/* Ricordi passati? */}
       <Agenda
         items={items}
