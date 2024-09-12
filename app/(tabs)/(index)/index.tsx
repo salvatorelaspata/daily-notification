@@ -2,10 +2,13 @@ import React, { useState } from "react";
 import { View, FlatList, Text, StyleSheet, Image } from "react-native";
 import { Agenda } from "react-native-calendars";
 import { format } from "date-fns";
-import { Notification } from "@/types/types";
+import { Notification, ScheduledNotification, Union } from "@/types/types";
 import { useSQLiteContext } from "expo-sqlite";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { getTodayNotifications } from "@/db/read";
+import {
+  getScheduledNotificationByDate,
+  getTodayNotifications,
+} from "@/db/read";
 import { ThemedText } from "@/components/ThemedText";
 import FloatingActionButton, {
   FloatingAction,
@@ -17,20 +20,8 @@ import { Href, useRouter } from "expo-router";
 const Today: React.FC = () => {
   const db = useSQLiteContext();
   const [reminders, setReminders] = React.useState<Notification[]>([]);
-
-  const { showModalCreate, hideModalCreate } = notificationActions;
   const router = useRouter();
   const actions: FloatingAction[] = [
-    // {
-    //   icon: "checkmark",
-    //   text: "Inventario",
-    //   onPress: () => console.log("Inventario"),
-    // },
-    // {
-    //   icon: "qr-code",
-    //   text: "Cambio ubicazione",
-    //   onPress: () => console.log("Cambio ubicazione"),
-    // },
     {
       icon: "add",
       text: "New Reminder",
@@ -51,47 +42,70 @@ const Today: React.FC = () => {
     getReminders();
   }, []);
 
-  const renderItem = ({ item }: { item: Notification }) => (
+  const renderItem = ({ item }: { item: Union }) => (
     <View style={styles.notificationItem}>
-      <ThemedText>{item.id}</ThemedText>
       <ThemedText>{item.title}</ThemedText>
       <ThemedText>{item.description}</ThemedText>
       <ThemedText>{item.repeat_count}</ThemedText>
-      <ThemedText>{item.interval_days}</ThemedText>
+      <ThemedText>{item.month_preference}</ThemedText>
+      <ThemedText>{item.months}</ThemedText>
+      <ThemedText>{item.day_preference}</ThemedText>
       <ThemedText>{item.days_of_week}</ThemedText>
-      <ThemedText>{item.notification_time}</ThemedText>
-      <ThemedText>{format(item.created_at, "yyyy-MM-dd HH:mm")}</ThemedText>
+      <ThemedText>{item.time_preference}</ThemedText>
+      <ThemedText>{format(item.start_time, "HH:mm")}</ThemedText>
+      <ThemedText>{format(item.end_time, "HH:mm")}</ThemedText>
+      <ThemedText>{format(item.created_at, "yyyy-MM-dd")}</ThemedText>
       <ThemedText>{item.is_notified}</ThemedText>
     </View>
   );
   const [items, setItems] = useState<any>({});
 
-  const loadItems = (day: any) => {
-    setTimeout(() => {
-      for (let i = -15; i < 85; i++) {
-        const time = day.timestamp + i * 24 * 60 * 60 * 1000;
-        const strTime = timeToString(time);
+  interface Day {
+    dateString: string;
+    day: number;
+    month: number;
+    timestamp: number;
+    year: number;
+  }
 
-        if (!items[strTime]) {
-          items[strTime] = [];
+  const loadItems = (day: Day) => {
+    console.log("day", day);
 
-          const numItems = Math.floor(Math.random() * 3 + 1);
-          for (let j = 0; j < numItems; j++) {
-            items[strTime].push({
-              name: "Evento " + strTime + " #" + j,
-              height: Math.max(50, Math.floor(Math.random() * 150)),
-              day: strTime,
-            });
-          }
-        }
-      }
-
-      const newItems: any = {};
-      Object.keys(items).forEach((key) => {
-        newItems[key] = items[key];
-      });
-      setItems(newItems);
-    }, 1000);
+    (async () => {
+      const items: Union[] = await getScheduledNotificationByDate(
+        db,
+        day.dateString
+      );
+      setItems(
+        items.map((item) => ({
+          name: item.title,
+          height: 50,
+          day: item.scheduled_date,
+        }))
+      );
+    })();
+    // setTimeout(() => {
+    //   for (let i = -15; i < 85; i++) {
+    //     const time = day.timestamp + i * 24 * 60 * 60 * 1000;
+    //     const strTime = timeToString(time);
+    //     if (!items[strTime]) {
+    //       items[strTime] = [];
+    //       const numItems = Math.floor(Math.random() * 3 + 1);
+    //       for (let j = 0; j < numItems; j++) {
+    //         items[strTime].push({
+    //           name: "Evento " + strTime + " #" + j,
+    //           height: Math.max(50, Math.floor(Math.random() * 150)),
+    //           day: strTime,
+    //         });
+    //       }
+    //     }
+    //   }
+    //   const newItems: any = {};
+    //   Object.keys(items).forEach((key) => {
+    //     newItems[key] = items[key];
+    //   });
+    //   setItems(newItems);
+    // }, 1000);
   };
 
   const renderAgendaItem = (item: any) => {
@@ -103,30 +117,17 @@ const Today: React.FC = () => {
       </View>
     );
   };
-
-  const timeToString = (time: string) => {
-    const date = new Date(time);
-    return date.toISOString().split("T")[0];
-  };
   return (
     <SafeAreaView style={styles.container}>
-      {/* <FlatList
-        data={reminders}
-        keyExtractor={(item) => item?.id?.toString() ?? ""}
-        renderItem={renderItem}
-        ListEmptyComponent={
-          <View style={styles.container}>
-            <Text style={styles.emptyText}>
-              No reminders have been added yet.
-            </Text>
-          </View>
-        }
-      /> */}
+      <ThemedText type="title">Today</ThemedText>
+      <ThemedText type="subtitle">
+        {format(new Date(), "dd/MM/yyyy")}
+      </ThemedText>
       {/* Ricordi passati? */}
       <Agenda
         items={items}
         loadItemsForMonth={loadItems}
-        renderItem={renderAgendaItem}
+        renderItem={renderItem}
         renderEmptyDate={() => <View />}
         rowHasChanged={(r1: any, r2: any) => r1.name !== r2.name}
       />

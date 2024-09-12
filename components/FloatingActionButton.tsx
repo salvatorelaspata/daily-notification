@@ -60,7 +60,7 @@ const FloatingActionButton: React.FC<FloatingActionButtonProps> = ({
             {
               translateY: animation.interpolate({
                 inputRange: [0, 1],
-                outputRange: [0, -60 * (index + 1)],
+                outputRange: [0, 60 * (index + 1)],
               }),
             },
             {
@@ -78,7 +78,7 @@ const FloatingActionButton: React.FC<FloatingActionButtonProps> = ({
             {
               translateY: animation.interpolate({
                 inputRange: [0, 1],
-                outputRange: [0, -60 * (index + 1)],
+                outputRange: [0, 60 * (index + 1)],
               }),
             },
           ],
@@ -127,8 +127,8 @@ const FloatingActionButton: React.FC<FloatingActionButtonProps> = ({
 const styles = StyleSheet.create({
   container: {
     position: "absolute",
-    bottom: 14,
-    right: 14,
+    top: 64,
+    right: 32,
   },
   button: {
     width: 50,

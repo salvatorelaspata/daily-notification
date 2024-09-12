@@ -1,3 +1,4 @@
+import { ScheduledNotification, Union } from "@/types/types";
 import type { SQLiteDatabase } from "expo-sqlite";
 
 export const getTodayNotifications = async (db: SQLiteDatabase) => {
@@ -23,5 +24,29 @@ export const getAllNotifications = async (db: SQLiteDatabase) => {
   } catch (error) {
     console.error("Error while getting all notifications", error);
     return [];
+  }
+};
+
+export const getScheduledNotificationByDate = async (
+  db: SQLiteDatabase,
+  date: string
+) => {
+  const statement = await db.prepareAsync(
+    `SELECT *
+      FROM scheduled_notifications  as s
+      INNER JOIN notifications AS n
+      ON scheduled_notifications.notification_id = notifications.id
+      WHERE scheduled_date = ?`
+  );
+  try {
+    const result = await statement.executeAsync([date]);
+    const all = await result.getAllAsync();
+
+    return all as Union[];
+  } catch (error) {
+    console.error("Error while getting notifications by date", error);
+    return [];
+  } finally {
+    await statement.finalizeAsync();
   }
 };
