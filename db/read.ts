@@ -35,7 +35,7 @@ export const getScheduledNotificationByDate = async (
     `SELECT *
       FROM scheduled_notifications  as s
       INNER JOIN notifications AS n
-      ON scheduled_notifications.notification_id = notifications.id
+      ON s.notification_id = n.id
       WHERE scheduled_date = ?`
   );
   try {

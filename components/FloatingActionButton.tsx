@@ -7,6 +7,7 @@ import {
   Text,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
+import { useThemeColor } from "@/hooks/useThemeColor";
 
 export interface FloatingAction {
   text: string;
@@ -23,6 +24,8 @@ const FloatingActionButton: React.FC<FloatingActionButtonProps> = ({
 }) => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const animation = useRef(new Animated.Value(0)).current;
+  const bgColor = useThemeColor({}, "buttonBg");
+  const textColor = useThemeColor({}, "buttonText");
 
   const toggleMenu = (): void => {
     const toValue = isOpen ? 0 : 1;
@@ -96,14 +99,20 @@ const FloatingActionButton: React.FC<FloatingActionButtonProps> = ({
             <Animated.View
               style={[
                 styles.actionButton,
-                { backgroundColor: "#007bff" },
+                { backgroundColor: bgColor },
                 actionStyle,
               ]}
             >
               <Ionicons name={action.icon} size={24} color="#fff" />
             </Animated.View>
             <Animated.View style={[styles.actionButtonWrap, actionTextStyle]}>
-              <Text style={{ ...styles.actionButtonText, color: "#007bff" }}>
+              <Text
+                style={{
+                  ...styles.actionButtonText,
+                  color: textColor,
+                  backgroundColor: bgColor,
+                }}
+              >
                 {action.text}
               </Text>
             </Animated.View>
@@ -112,10 +121,13 @@ const FloatingActionButton: React.FC<FloatingActionButtonProps> = ({
       })}
       <TouchableOpacity
         onPress={toggleMenu}
-        style={{ ...styles.button, backgroundColor: "#007bff" }}
+        style={{
+          ...styles.button,
+          backgroundColor: bgColor,
+        }}
       >
         <Animated.View
-          style={[styles.button, { backgroundColor: "#007bff" }, rotation]}
+          style={[styles.button, { backgroundColor: bgColor }, rotation]}
         >
           <Ionicons name="add" size={24} color="#fff" />
         </Animated.View>
@@ -136,11 +148,12 @@ const styles = StyleSheet.create({
     borderRadius: 25,
     justifyContent: "center",
     alignItems: "center",
-    shadowColor: "#000",
+    shadowColor: "#fff",
     shadowOpacity: 0.3,
     shadowOffset: { width: 0, height: 2 },
-    shadowRadius: 3,
-    elevation: 5,
+    shadowRadius: 4,
+    elevation: 6,
+    borderBlockColor: "red",
   },
   actionButton: {
     position: "absolute",
@@ -160,7 +173,7 @@ const styles = StyleSheet.create({
   actionButtonText: {
     position: "absolute",
     right: 36,
-    backgroundColor: "#fff",
+
     shadowColor: "#000",
     shadowOpacity: 0.3,
     shadowOffset: { width: 0, height: 2 },

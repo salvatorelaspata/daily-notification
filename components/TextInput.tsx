@@ -26,7 +26,9 @@ const CustomTextInput: React.FC<CustomTextInputProps> = ({
 
 const styles = StyleSheet.create({
   input: {
+    color: "#000",
     borderWidth: 1,
+    tintColor: "#000",
     borderColor: "#ccc",
     borderRadius: 4,
     padding: 8,

@@ -8,6 +8,8 @@ import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
 import { useEffect, useState } from "react";
 import { useSQLiteContext } from "expo-sqlite";
+import { Collapsible } from "@/components/Collapsible";
+import { ExternalLink } from "@/components/ExternalLink";
 
 export default function Settings() {
   const [version, setVersion] = useState("");
@@ -39,13 +41,17 @@ export default function Settings() {
       <ThemedText>
         This app help yout to manage your reminders and notifications.
       </ThemedText>
-
-      <ThemedView
-        style={{ flexDirection: "row", justifyContent: "space-between" }}
-      >
-        <ThemedText>SQLite version: </ThemedText>
-        <ThemedText type="defaultSemiBold">{version}</ThemedText>
-      </ThemedView>
+      <Collapsible title="Technical info">
+        <ThemedView>
+          <ThemedText>
+            SQLite version:
+            <ThemedText type="defaultSemiBold">{version}</ThemedText>
+          </ThemedText>
+          <ExternalLink href="https://www.sqlite.org/index.html">
+            <ThemedText type="link">Learn more</ThemedText>
+          </ExternalLink>
+        </ThemedView>
+      </Collapsible>
       {/* <Collapsible title="File-based routing">
         <ThemedText>
           This app has two screens:{" "}

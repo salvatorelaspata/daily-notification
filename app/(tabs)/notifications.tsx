@@ -4,8 +4,8 @@ import { View, FlatList, Text, StyleSheet, Image } from "react-native";
 import { format } from "date-fns";
 import { Notification } from "@/types/types";
 import { useSQLiteContext } from "expo-sqlite";
-import { SafeAreaView } from "react-native-safe-area-context";
 import { getAllNotifications } from "@/db/read";
+import { ThemedSafeAreaView } from "@/components/ThemedSafeAreaView";
 
 const Notifications: React.FC = () => {
   const db = useSQLiteContext();
@@ -29,16 +29,16 @@ const Notifications: React.FC = () => {
       <Text>{item.title}</Text>
       <Text>{item.description}</Text>
       <Text>{item.repeat_count}</Text>
-      <Text>{item.interval_days}</Text>
+      {/* <Text>{item.interval_days}</Text> */}
       <Text>{item.days_of_week}</Text>
-      <Text>{item.notification_time}</Text>
+      {/* <Text>{item.notification_time}</Text> */}
       <Text>{format(item.created_at, "yyyy-MM-dd HH:mm")}</Text>
       <Text>{item.is_notified}</Text>
     </View>
   );
 
   return (
-    <SafeAreaView style={styles.container}>
+    <ThemedSafeAreaView style={styles.container}>
       <FlatList
         data={reminders}
         keyExtractor={(item) => item?.id?.toString() ?? ""}
@@ -55,14 +55,13 @@ const Notifications: React.FC = () => {
           </View>
         }
       />
-    </SafeAreaView>
+    </ThemedSafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#fff",
     padding: 16,
   },
   notificationItem: {
@@ -70,28 +69,6 @@ const styles = StyleSheet.create({
     padding: 12,
     marginVertical: 8,
     borderRadius: 8,
-  },
-  actionButtons: {
-    flexDirection: "row",
-    justifyContent: "flex-end",
-    marginTop: 8,
-  },
-  editButton: {
-    backgroundColor: "#007bff",
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: 4,
-    marginRight: 8,
-  },
-  deleteButton: {
-    backgroundColor: "#dc3545",
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: 4,
-  },
-  buttonText: {
-    color: "#fff",
-    fontSize: 14,
   },
   emptyText: {
     fontSize: 16,

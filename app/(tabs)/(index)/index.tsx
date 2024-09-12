@@ -13,13 +13,13 @@ import { ThemedText } from "@/components/ThemedText";
 import FloatingActionButton, {
   FloatingAction,
 } from "@/components/FloatingActionButton";
-import { notificationActions, notificationState } from "@/store/notification";
-import { useSnapshot } from "valtio";
 import { Href, useRouter } from "expo-router";
+import { ThemedSafeAreaView } from "@/components/ThemedSafeAreaView";
+import { HelloWave } from "@/components/HelloWave";
 
 const Today: React.FC = () => {
   const db = useSQLiteContext();
-  const [reminders, setReminders] = React.useState<Notification[]>([]);
+  const [notification, setNotification] = React.useState<Notification[]>([]);
   const router = useRouter();
   const actions: FloatingAction[] = [
     {
@@ -34,7 +34,7 @@ const Today: React.FC = () => {
     async function getReminders() {
       try {
         const result = await getTodayNotifications(db);
-        if (result) setReminders(result as Notification[]);
+        if (result) setNotification(result as Notification[]);
       } catch (error) {
         console.error("Error while getting all Today", error);
       }
@@ -72,17 +72,21 @@ const Today: React.FC = () => {
     console.log("day", day);
 
     (async () => {
-      const items: Union[] = await getScheduledNotificationByDate(
-        db,
-        day.dateString
-      );
-      setItems(
-        items.map((item) => ({
-          name: item.title,
-          height: 50,
-          day: item.scheduled_date,
-        }))
-      );
+      try {
+        const items: Union[] = await getScheduledNotificationByDate(
+          db,
+          day.dateString
+        );
+        setItems(
+          items.map((item) => ({
+            name: item.title,
+            height: 50,
+            day: item.scheduled_date,
+          }))
+        );
+      } catch (error) {
+        console.error("Error while getting items", error);
+      }
     })();
     // setTimeout(() => {
     //   for (let i = -15; i < 85; i++) {
@@ -118,8 +122,11 @@ const Today: React.FC = () => {
     );
   };
   return (
-    <SafeAreaView style={styles.container}>
-      <ThemedText type="title">Today</ThemedText>
+    <ThemedSafeAreaView style={styles.container}>
+      <ThemedText type="title">
+        Today
+        <HelloWave />
+      </ThemedText>
       <ThemedText type="subtitle">
         {format(new Date(), "dd/MM/yyyy")}
       </ThemedText>
@@ -132,30 +139,21 @@ const Today: React.FC = () => {
         rowHasChanged={(r1: any, r2: any) => r1.name !== r2.name}
       />
       <FloatingActionButton actions={actions} />
-    </SafeAreaView>
+    </ThemedSafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#fff",
     padding: 16,
   },
   notificationItem: {
-    backgroundColor: "#f4f4f4",
     padding: 12,
     marginVertical: 8,
     borderRadius: 8,
   },
-  emptyText: {
-    fontSize: 16,
-    color: "#999",
-    textAlign: "center",
-    marginTop: 32,
-  },
   item: {
-    backgroundColor: "white",
     flex: 1,
     borderRadius: 5,
     padding: 10,

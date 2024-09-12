@@ -1,24 +1,25 @@
 import React, { useEffect, useState } from "react";
-import {
-  View,
-  Text,
-  StyleSheet,
-  ScrollView,
-  TouchableOpacity,
-} from "react-native";
+import { StyleSheet, Text, View } from "react-native";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import CustomTextInput from "@/components/TextInput";
-import CustomSlider from "@/components/Slider";
 import { Ionicons } from "@expo/vector-icons";
-import CustomCheckBox from "@/components/Checkbox";
-import CustomButton from "@/components/Button";
 import { ThemedText } from "@/components/ThemedText";
-import { days, months } from "@/constants/Date";
+import { days, momentOfTheDay, months } from "@/constants/Date";
+import { ThemedScrollView } from "@/components/ThemedScrollView";
+import { ThemedButton } from "@/components/ThemedButton";
+import { ThemedChip } from "@/components/ThemedChip";
+import { ThemedCheckbox } from "@/components/ThemedCheckbox";
+import { ThemedSlider } from "@/components/ThemedSlider";
+import { useThemeColor } from "@/hooks/useThemeColor";
+import SegmentedControl from "@react-native-segmented-control/segmented-control";
+import { ThemedCard } from "@/components/ThemedCard";
+import { ThemedSegmentedButton } from "@/components/ThemedSegmentedButton";
 
 type anyOrSpecific = "any" | "specific";
 
 export default function CreateReminderView() {
   const [title, setTitle] = useState("");
+  const [mode, setMode] = useState<number>(0); // 0 = random, 1 = specific
   const [repetitions, setRepetitions] = useState<number>(1);
   const [monthPreference, setMonthPreference] = useState<anyOrSpecific>("any");
   const [selectedMonths, setSelectedMonths] = useState<number[]>([]);
@@ -29,6 +30,10 @@ export default function CreateReminderView() {
   const [timePreference, setTimePreference] = useState<anyOrSpecific>("any");
   const [startTime, setStartTime] = useState<Date>(new Date());
   const [endTime, setEndTime] = useState<Date>(new Date());
+  const textColor = useThemeColor({}, "buttonText");
+  const bgColor = useThemeColor({}, "buttonBg");
+
+  const datePickerText = useThemeColor({}, "datePickerText");
 
   useEffect(() => {
     // preselect months, days and time
@@ -72,286 +77,244 @@ export default function CreateReminderView() {
   };
 
   return (
-    <ScrollView style={styles.container}>
+    <ThemedScrollView style={styles.container}>
       <ThemedText type="title" style={styles.title}>
         Nuovo Ricordo
       </ThemedText>
-      <View style={styles.card}>
-        <View style={styles.cardHeader}>
-          <Ionicons name="pencil" size={20} color="#000" />
-          <ThemedText type="subtitle">Generali</ThemedText>
-        </View>
-        <CustomTextInput
-          placeholder="Titolo del ricordo"
-          value={title}
-          onChangeText={setTitle}
+      <ThemedCard>
+        <ThemedSegmentedButton
+          values={["Casuale", "Specifico"]}
+          selectedIndex={mode}
+          onChange={(event) => setMode(event.nativeEvent.selectedSegmentIndex)}
         />
-        <CustomSlider
-          value={repetitions}
-          onValueChange={(value) => setRepetitions(Math.round(value))}
-          minimumValue={1}
-          maximumValue={12}
-          step={1}
-          label="Numero di ripetizioni all'anno"
-        />
-      </View>
+      </ThemedCard>
+      {mode === 0 ? (
+        <>
+          <ThemedCard>
+            <View style={styles.cardHeader}>
+              <Ionicons
+                style={{ marginRight: 8 }}
+                name="paper-plane"
+                size={30}
+                color="#000"
+              />
+              <Text>Generali</Text>
+            </View>
+            <CustomTextInput
+              placeholder="Titolo del ricordo"
+              value={title}
+              onChangeText={setTitle}
+            />
+            <View style={styles.container}>
+              <Text style={styles.label}>
+                Numero di ripetizioni all'anno: {repetitions}
+              </Text>
+              <ThemedSlider
+                value={repetitions}
+                onValueChange={(value) => setRepetitions(Math.round(value))}
+                minimumValue={1}
+                maximumValue={12}
+                step={1}
+              />
+            </View>
+          </ThemedCard>
 
-      <View style={styles.card}>
-        <View style={styles.cardHeader}>
-          <Ionicons name="calendar" size={20} color="#000" />
-          <ThemedText type="subtitle">Preferenze</ThemedText>
-        </View>
-        <Text style={styles.label}>Mesi</Text>
-        <CustomButton
-          title="Qualsiasi mese"
-          onPress={() => setMonthPreference("any")}
-          selected={monthPreference === "any"}
-        />
-        <CustomButton
-          title="Mesi specifici"
-          onPress={() => setMonthPreference("specific")}
-          selected={monthPreference === "specific"}
-        />
-        {monthPreference === "specific" && (
-          <View style={styles.optionsContainer}>
-            {months.map((month, index) => (
-              <TouchableOpacity
-                key={month}
-                onPress={() => toggleMonth(index)}
-                style={[
-                  styles.chip,
-                  selectedMonths.includes(index) && styles.chipSelected,
-                ]}
-              >
-                <Text
-                  style={
-                    selectedMonths.includes(index)
-                      ? styles.chipTextSelected
-                      : styles.chipText
-                  }
-                >
-                  {month}
-                </Text>
-              </TouchableOpacity>
-            ))}
-          </View>
-        )}
-        <Text style={styles.label}>Giorni della settimana</Text>
-        <CustomButton
-          title="Qualsiasi giorno"
-          onPress={() => setDayPreference("any")}
-          selected={dayPreference === "any"}
-        />
-        <CustomButton
-          title="Giorni specifici"
-          onPress={() => setDayPreference("specific")}
-          selected={dayPreference === "specific"}
-        />
-        {dayPreference === "specific" && (
-          <View>
-            <View style={styles.optionsContainer}>
-              {days.map((day, index) => (
-                <TouchableOpacity
-                  key={day}
-                  onPress={() => toggleDay(index)}
-                  style={[
-                    styles.chip,
-                    selectedDays.includes(index) && styles.chipSelected,
-                  ]}
-                >
-                  <Text
-                    style={
-                      selectedDays.includes(index)
-                        ? styles.chipTextSelected
-                        : styles.chipText
+          <ThemedCard>
+            <View style={styles.cardHeader}>
+              <Ionicons
+                style={{ marginRight: 8 }}
+                name="calendar"
+                size={30}
+                color="#000"
+              />
+              <Text>Preferenze</Text>
+            </View>
+            <Text style={styles.label}>Mesi</Text>
+            <ThemedButton
+              text="Qualsiasi mese"
+              onPress={() => setMonthPreference("any")}
+              type={monthPreference === "any" ? "default" : "outline"}
+            />
+            <ThemedButton
+              text="Mesi specifici"
+              onPress={() => setMonthPreference("specific")}
+              type={monthPreference === "specific" ? "default" : "outline"}
+            />
+            {monthPreference === "specific" && (
+              <View style={styles.montsContainer}>
+                {months.map((month, index) => (
+                  <ThemedChip
+                    key={month}
+                    onPress={() => toggleMonth(index)}
+                    text={month}
+                    selected={selectedMonths.includes(index)}
+                    style={{ width: "20%" }}
+                  />
+                ))}
+              </View>
+            )}
+            <Text style={styles.label}>Giorni della settimana</Text>
+            <ThemedButton
+              text="Qualsiasi giorno"
+              onPress={() => setDayPreference("any")}
+              type={dayPreference === "any" ? "default" : "outline"}
+            />
+            <ThemedButton
+              text="Giorni specifici"
+              onPress={() => setDayPreference("specific")}
+              type={dayPreference === "specific" ? "default" : "outline"}
+            />
+            {dayPreference === "specific" && (
+              <View>
+                <View style={styles.daysContainer}>
+                  {days.map((day, index) => (
+                    <ThemedChip
+                      key={day}
+                      onPress={() => toggleDay(index)}
+                      text={day}
+                      selected={selectedDays.includes(index)}
+                      style={{ width: "20%" }}
+                    />
+                  ))}
+                </View>
+
+                <ThemedCheckbox
+                  label="Giorni lavorativi"
+                  checked={workingDays}
+                  onPress={() => {
+                    const current = !workingDays;
+                    for (let i = 0; i < 5; i++) {
+                      if (current && !selectedDays.includes(i)) toggleDay(i); // select
+                      if (!current && selectedDays.includes(i)) toggleDay(i); // remove
                     }
-                  >
-                    {day}
-                  </Text>
-                </TouchableOpacity>
-              ))}
-            </View>
+                    setWorkingDays(current);
+                  }}
+                />
+                <ThemedCheckbox
+                  label="Fine settimana"
+                  checked={weekends}
+                  onPress={() => {
+                    const current = !weekends;
 
-            <CustomCheckBox
-              label="Giorni lavorativi"
-              checked={workingDays}
-              onPress={() => {
-                const current = !workingDays;
-                for (let i = 0; i < 5; i++) {
-                  if (current && !selectedDays.includes(i)) toggleDay(i); // select
-                  if (!current && selectedDays.includes(i)) toggleDay(i); // remove
-                }
-                setWorkingDays(current);
-              }}
+                    for (let i = 5; i < 7; i++) {
+                      if (current && !selectedDays.includes(i)) toggleDay(i); // select
+                      if (!current && selectedDays.includes(i)) toggleDay(i); // remove
+                    }
+                    setWeekends(current);
+                  }}
+                />
+              </View>
+            )}
+            <Text style={styles.label}>Orario</Text>
+            <ThemedButton
+              text="Qualsiasi ora"
+              onPress={() => setTimePreference("any")}
+              type={timePreference === "any" ? "default" : "outline"}
             />
-            <CustomCheckBox
-              label="Fine settimana"
-              checked={weekends}
-              onPress={() => {
-                const current = !weekends;
-
-                for (let i = 5; i < 7; i++) {
-                  if (current && !selectedDays.includes(i)) toggleDay(i); // select
-                  if (!current && selectedDays.includes(i)) toggleDay(i); // remove
-                }
-                setWeekends(current);
-              }}
+            <ThemedButton
+              text="Fascia oraria specifica"
+              onPress={() => setTimePreference("specific")}
+              type={timePreference === "specific" ? "default" : "outline"}
             />
-          </View>
-        )}
-        <Text style={styles.label}>Orario</Text>
-        <CustomButton
-          title="Qualsiasi ora"
-          onPress={() => setTimePreference("any")}
-          selected={timePreference === "any"}
-        />
-        <CustomButton
-          title="Fascia oraria specifica"
-          onPress={() => setTimePreference("specific")}
-          selected={timePreference === "specific"}
-        />
-        {timePreference === "specific" && (
-          <View>
-            <View style={styles.timePickerContainer}>
-              <ThemedText style={styles.label}>Dalle:</ThemedText>
-              <DateTimePicker
-                value={startTime}
-                mode="time"
-                is24Hour={true}
-                display="default"
-                onChange={(event, selectedTime) =>
-                  setStartTime(selectedTime || startTime)
-                }
-              />
-              <ThemedText style={styles.label}>Alle:</ThemedText>
-              <DateTimePicker
-                value={endTime}
-                mode="time"
-                is24Hour={true}
-                display="default"
-                onChange={(event, selectedTime) =>
-                  setEndTime(selectedTime || endTime)
-                }
-              />
-            </View>
-            {/* mattina */}
-            <View
-              style={[
-                styles.optionsContainer,
-                { justifyContent: "space-between", marginTop: 16 },
-              ]}
-            >
-              <TouchableOpacity
-                onPress={() => {
-                  setStartTime(new Date(0, 0, 0, 6, 0, 0));
-                  setEndTime(new Date(0, 0, 0, 12, 0, 0));
-                }}
-                style={[
-                  styles.chip,
-                  startTime.getHours() === 6 &&
-                    endTime.getHours() === 12 &&
-                    styles.chipSelected,
-                ]}
-              >
-                <Text
-                  style={
-                    startTime.getHours() === 6 && endTime.getHours() === 12
-                      ? styles.chipTextSelected
-                      : styles.chipText
-                  }
-                >
-                  Mattina
-                </Text>
-              </TouchableOpacity>
-              {/* pomeriggio */}
-              <TouchableOpacity
-                onPress={() => {
-                  setStartTime(new Date(0, 0, 0, 12, 0, 0));
-                  setEndTime(new Date(0, 0, 0, 18, 0, 0));
-                }}
-                style={[
-                  styles.chip,
-                  startTime.getHours() === 12 &&
-                    endTime.getHours() === 18 &&
-                    styles.chipSelected,
-                ]}
-              >
-                <Text
-                  style={
-                    startTime.getHours() === 12 && endTime.getHours() === 18
-                      ? styles.chipTextSelected
-                      : styles.chipText
-                  }
-                >
-                  Pomeriggio
-                </Text>
-              </TouchableOpacity>
-              {/* sera */}
-              <TouchableOpacity
-                onPress={() => {
-                  setStartTime(new Date(0, 0, 0, 18, 0, 0));
-                  setEndTime(new Date(0, 0, 0, 23, 59, 59));
-                }}
-                style={[
-                  styles.chip,
-                  startTime.getHours() === 18 &&
-                    endTime.getHours() === 23 &&
-                    styles.chipSelected,
-                ]}
-              >
-                <Text
-                  style={
-                    startTime.getHours() === 18 && endTime.getHours() === 23
-                      ? styles.chipTextSelected
-                      : styles.chipText
-                  }
-                >
-                  Sera
-                </Text>
-              </TouchableOpacity>
-            </View>
-          </View>
-        )}
-      </View>
-
-      <View style={styles.card}>
-        <Text style={styles.randomNote}>
+            {timePreference === "specific" && (
+              <View>
+                <View style={styles.timePickerContainer}>
+                  <Text style={styles.label}>Dalle:</Text>
+                  <DateTimePicker
+                    textColor={textColor}
+                    accentColor={bgColor}
+                    value={startTime}
+                    mode="time"
+                    is24Hour={true}
+                    display="default"
+                    onChange={(event, selectedTime) =>
+                      setStartTime(selectedTime || startTime)
+                    }
+                  />
+                  <Text style={styles.label}>Alle:</Text>
+                  <DateTimePicker
+                    textColor={textColor}
+                    accentColor={bgColor}
+                    value={endTime}
+                    mode="time"
+                    is24Hour={true}
+                    display="default"
+                    onChange={(event, selectedTime) =>
+                      setEndTime(selectedTime || endTime)
+                    }
+                  />
+                </View>
+                <View style={styles.momentContainer}>
+                  {Object.keys(momentOfTheDay).map((moment) => (
+                    <ThemedChip
+                      key={moment}
+                      text={moment}
+                      onPress={() => {
+                        setStartTime(
+                          momentOfTheDay[moment as keyof typeof momentOfTheDay]
+                            .start
+                        );
+                        setEndTime(
+                          momentOfTheDay[moment as keyof typeof momentOfTheDay]
+                            .end
+                        );
+                      }}
+                      selected={
+                        startTime.getHours() ===
+                          momentOfTheDay[
+                            moment as keyof typeof momentOfTheDay
+                          ].start.getHours() &&
+                        endTime.getHours() ===
+                          momentOfTheDay[
+                            moment as keyof typeof momentOfTheDay
+                          ].end.getHours()
+                      }
+                    />
+                  ))}
+                </View>
+              </View>
+            )}
+          </ThemedCard>
+        </>
+      ) : (
+        <ThemedCard>
+          <Text style={styles.label}>Data:</Text>
+          <DateTimePicker
+            textColor={datePickerText}
+            value={new Date()}
+            mode="date"
+            display="spinner"
+            onChange={(_, selectedTime) => console.log(selectedTime)}
+          />
+          <Text style={styles.label}>Ora:</Text>
+          <DateTimePicker
+            textColor={datePickerText}
+            value={new Date()}
+            mode="time"
+            is24Hour={true}
+            display="spinner"
+            onChange={(_, selectedTime) => console.log(selectedTime)}
+          />
+        </ThemedCard>
+      )}
+      <ThemedCard>
+        <ThemedText style={styles.randomNote}>
           Il ricordo verrà programmato in un giorno casuale in base alle
           preferenze selezionate.
-        </Text>
-        <CustomButton
-          title="Crea Ricordo"
-          onPress={handleCreate}
-          style={styles.createButton}
-        />
-      </View>
-    </ScrollView>
+        </ThemedText>
+        <ThemedButton text="Crea Ricordo" onPress={handleCreate} />
+      </ThemedCard>
+    </ThemedScrollView>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#f0f0f0",
   },
   title: {
     textAlign: "center",
     marginVertical: 16,
-  },
-  card: {
-    backgroundColor: "#ffffff",
-    borderRadius: 8,
-    padding: 16,
-    marginHorizontal: 16,
-    marginBottom: 16,
-    shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.23,
-    shadowRadius: 2.62,
-    elevation: 4,
   },
   cardHeader: {
     flexDirection: "row",
@@ -363,26 +326,21 @@ const styles = StyleSheet.create({
     fontWeight: "500",
     marginBottom: 8,
   },
-  optionsContainer: {
+  montsContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    flexWrap: "wrap",
+    marginBottom: 16,
+  },
+  daysContainer: {
     flexDirection: "row",
     flexWrap: "wrap",
     marginBottom: 16,
   },
-  chip: {
-    backgroundColor: "#e0e0e0",
-    borderRadius: 16,
-    paddingVertical: 6,
-    paddingHorizontal: 12,
-    margin: 4,
-  },
-  chipSelected: {
-    backgroundColor: "#007AFF",
-  },
-  chipText: {
-    color: "#000000",
-  },
-  chipTextSelected: {
-    color: "#ffffff",
+  momentContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginTop: 16,
   },
   timePickerContainer: {
     marginTop: 16,
@@ -392,8 +350,5 @@ const styles = StyleSheet.create({
     marginBottom: 16,
     fontSize: 14,
     color: "#666",
-  },
-  createButton: {
-    backgroundColor: "#007AFF",
   },
 });
