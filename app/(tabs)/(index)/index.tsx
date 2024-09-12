@@ -33,7 +33,7 @@ const Today: React.FC = () => {
     // },
     {
       icon: "add",
-      text: "Nuovo",
+      text: "New Reminder",
       onPress: () => {
         router.navigate("/new" as Href);
       },

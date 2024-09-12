@@ -15,9 +15,9 @@ export default function ProductLayout() {
         <Stack.Screen
           name="new"
           options={{
-            presentation: "modal",
-            headerBackTitle: "Prodotti",
-            headerTitle: "Nuovo",
+            // presentation: "modal",
+            headerBackTitle: "Today",
+            headerTitle: "New",
           }}
         />
       </Stack>

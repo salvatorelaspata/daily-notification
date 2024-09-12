@@ -38,11 +38,36 @@ export async function migrateDbIfNeeded(db: SQLiteDatabase) {
       await db.execAsync(`
         CREATE TABLE settings (
           id INTEGER PRIMARY KEY AUTOINCREMENT,
-          user_id INTEGER NOT NULL,           -- ID dell'utente (se necessario)
+          -- user_id INTEGER NOT NULL,           -- ID dell'utente (se necessario)
           preference_key TEXT NOT NULL,       -- Chiave della preferenza
           preference_value TEXT NOT NULL       -- Valore della preferenza
         );
       `);
+
+      // Insert sample data
+      // await db.execAsync(`
+      //   INSERT INTO notifications (title, repeat_count, interval_days, notification_time)
+      //   VALUES
+      //     ('Sample notification 1', 1, 7, 'morning'),
+      //     ('Sample notification 2', 2, 14, 'afternoon'),
+      //     ('Sample notification 3', 3, 21, 'evening');
+      // `);
+      // await db.execAsync(`
+      //   INSERT INTO settings (preference_key, preference_value)
+      //   VALUES
+      //     ('theme', 'light'),
+      //     ('language', 'en');
+      // `);
+      // await db.execAsync(`
+      //   INSERT INTO scheduled_notifications (notification_id, scheduled_date)
+      //   VALUES
+      //     (1, '2022-01-01'),
+      //     (1, '2022-01-08'),
+      //     (1, '2022-01-15'),
+      //     (2, '2022-01-01'),
+      //     (2, '2022-01-15'),
+      //     (3, '2022-01-01');
+      // `);
     } catch (error) {
       console.error("Error while creating tables", error);
     }
