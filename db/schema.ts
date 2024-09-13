@@ -19,12 +19,15 @@ export async function migrateDbIfNeeded(db: SQLiteDatabase) {
     try {
       // notifications
       await db.execAsync(`
-        DROP TABLE IF EXISTS notifications;
-        CREATE TABLE notifications (
+        -- DROP TABLE IF EXISTS notifications;
+        CREATE TABLE IF NOT EXISTS notifications (
           id INTEGER PRIMARY KEY AUTOINCREMENT,
           title TEXT NOT NULL,
           description TEXT,
           repeat_count INTEGER NOT NULL,
+          mode TEXT,             -- 'random' o 'specific'
+          date DATE,            -- Data se 'specific'
+          time TIME,            -- Ora se 'specific'
           month_preference TEXT, -- 'any' o 'specific'
           months TEXT,           -- Mesi selezionati se 'specific'
           day_preference TEXT,   -- 'any' o 'specific'
@@ -38,8 +41,8 @@ export async function migrateDbIfNeeded(db: SQLiteDatabase) {
       `);
       // scheduled_notifications
       await db.execAsync(`
-        DROP TABLE IF EXISTS scheduled_notifications;
-        CREATE TABLE scheduled_notifications (
+        -- DROP TABLE IF EXISTS scheduled_notifications;
+        CREATE TABLE IF NOT EXISTS scheduled_notifications (
           id INTEGER PRIMARY KEY AUTOINCREMENT,
           notification_id INTEGER NOT NULL,
           scheduled_date DATE NOT NULL,
@@ -49,8 +52,8 @@ export async function migrateDbIfNeeded(db: SQLiteDatabase) {
       `);
       // settings
       await db.execAsync(`
-        DROP TABLE IF EXISTS settings;
-        CREATE TABLE settings (
+        -- DROP TABLE IF EXISTS settings;
+        CREATE TABLE IF NOT EXISTS settings (
           id INTEGER PRIMARY KEY AUTOINCREMENT,
           preference_key TEXT NOT NULL,
           preference_value TEXT NOT NULL
@@ -62,25 +65,25 @@ export async function migrateDbIfNeeded(db: SQLiteDatabase) {
 
     // Insert sample data
     // console.log("Sample Data TODAY");
-    const statNotification = await db.prepareAsync(
-      `INSERT INTO notifications (title, description, repeat_count, month_preference, months, day_preference, days_of_week, time_preference, start_time, end_time)
-        VALUES ('Test notification', 'This is a test notification', 1, 'any', '', 'any', '', 'any', '09:00', '09:30')`
-    );
-    const execNotification: any = await statNotification.executeAsync();
-    const statScheduledNotification = await db.prepareAsync(
-      `INSERT INTO scheduled_notifications (notification_id, scheduled_date, scheduled_time)
-        VALUES (?, ?, ?)`
-    );
+    // const statNotification = await db.prepareAsync(
+    //   `INSERT INTO notifications (title, description, repeat_count, month_preference, months, day_preference, days_of_week, time_preference, start_time, end_time)
+    //     VALUES ('Test notification', 'This is a test notification', 1, 'any', '', 'any', '', 'any', '09:00', '09:30')`
+    // );
+    // const execNotification: any = await statNotification.executeAsync();
+    // const statScheduledNotification = await db.prepareAsync(
+    //   `INSERT INTO scheduled_notifications (notification_id, scheduled_date, scheduled_time)
+    //     VALUES (?, ?, ?)`
+    // );
     // console.log("execNotification", execNotification.lastInsertRowId);
-    const today = new Date();
-    const date = today.toISOString().split("T")[0];
-    const time = today.toISOString().split("T")[1].split(".")[0];
+    // const today = new Date();
+    // const date = today.toISOString().split("T")[0];
+    // const time = today.toISOString().split("T")[1].split(".")[0];
 
-    await statScheduledNotification.executeAsync([
-      execNotification.lastInsertRowId as number,
-      date,
-      time,
-    ]);
+    // await statScheduledNotification.executeAsync([
+    //   execNotification.lastInsertRowId as number,
+    //   date,
+    //   time,
+    // ]);
     currentDbVersion = 1;
   }
   await db.execAsync(`PRAGMA user_version = ${DATABASE_VERSION}`);

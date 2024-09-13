@@ -3,6 +3,9 @@ export type Notification = {
   title: string;
   description: string;
   repeat_count: number;
+  mode: string; // 'random' o 'specific'
+  date: string; // Data se 'specific'
+  time: string; // Ora se 'specific'
   month_preference: string;
   months: string;
   day_preference: string;

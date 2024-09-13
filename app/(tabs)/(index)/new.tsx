@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
-import { StyleSheet, Text, View } from "react-native";
+import { Alert, StyleSheet, Text, View } from "react-native";
 import DateTimePicker from "@react-native-community/datetimepicker";
-import CustomTextInput from "@/components/TextInput";
 import { Ionicons } from "@expo/vector-icons";
 import { ThemedText } from "@/components/ThemedText";
 import { days, momentOfTheDay, months } from "@/constants/Date";
@@ -11,9 +10,13 @@ import { ThemedChip } from "@/components/ThemedChip";
 import { ThemedCheckbox } from "@/components/ThemedCheckbox";
 import { ThemedSlider } from "@/components/ThemedSlider";
 import { useThemeColor } from "@/hooks/useThemeColor";
-import SegmentedControl from "@react-native-segmented-control/segmented-control";
 import { ThemedCard } from "@/components/ThemedCard";
 import { ThemedSegmentedButton } from "@/components/ThemedSegmentedButton";
+import { createReminder } from "@/db/insert";
+import { useSQLiteContext } from "expo-sqlite";
+import CustomTextInput from "@/components/TextInput";
+import ThemedTextInput from "@/components/ThemedTextInput";
+import { router } from "expo-router";
 
 type anyOrSpecific = "any" | "specific";
 
@@ -21,6 +24,8 @@ export default function CreateReminderView() {
   const [title, setTitle] = useState("");
   const [mode, setMode] = useState<number>(0); // 0 = random, 1 = specific
   const [repetitions, setRepetitions] = useState<number>(1);
+  const [specificDate, setSpecificDate] = useState<Date>(new Date());
+  const [specificTime, setSpecificTime] = useState<Date>(new Date());
   const [monthPreference, setMonthPreference] = useState<anyOrSpecific>("any");
   const [selectedMonths, setSelectedMonths] = useState<number[]>([]);
   const [dayPreference, setDayPreference] = useState<anyOrSpecific>("any");
@@ -34,6 +39,8 @@ export default function CreateReminderView() {
   const bgColor = useThemeColor({}, "buttonBg");
 
   const datePickerText = useThemeColor({}, "datePickerText");
+
+  const db = useSQLiteContext();
 
   useEffect(() => {
     // preselect months, days and time
@@ -60,20 +67,27 @@ export default function CreateReminderView() {
     );
   };
 
-  const handleCreate = () => {
-    console.log({
-      title,
-      repetitions,
-      monthPreference,
-      selectedMonths,
-      dayPreference,
-      selectedDays,
-      workingDays,
-      weekends,
-      timePreference,
-      startTime,
-      endTime,
-    });
+  const handleCreate = async () => {
+    try {
+      await createReminder(db, {
+        title,
+        mode: mode === 0 ? "random" : "specific",
+        date: specificDate.toISOString(),
+        time: specificTime.toISOString(),
+        repeat_count: repetitions,
+        month_preference: monthPreference,
+        months: selectedMonths.join(","),
+        day_preference: dayPreference,
+        days_of_week: selectedDays.join(","),
+        time_preference: timePreference,
+        start_time: startTime.toISOString(),
+        end_time: endTime.toISOString(),
+      });
+      Alert.alert("Successo", "Ricordo creato con successo");
+      router.back();
+    } catch (error) {
+      Alert.alert("Errore", (error as Error).message);
+    }
   };
 
   return (
@@ -81,16 +95,23 @@ export default function CreateReminderView() {
       <ThemedText type="title" style={styles.title}>
         Nuovo Ricordo
       </ThemedText>
-      <ThemedCard>
+      <ThemedCard style={styles.card}>
         <ThemedSegmentedButton
-          values={["Casuale", "Specifico"]}
+          values={["Random", "Specific"]}
           selectedIndex={mode}
           onChange={(event) => setMode(event.nativeEvent.selectedSegmentIndex)}
+        />
+
+        <ThemedTextInput
+          style={{ marginTop: 16 }}
+          placeholder="Titolo del ricordo"
+          value={title}
+          onChangeText={setTitle}
         />
       </ThemedCard>
       {mode === 0 ? (
         <>
-          <ThemedCard>
+          <ThemedCard style={styles.card}>
             <View style={styles.cardHeader}>
               <Ionicons
                 style={{ marginRight: 8 }}
@@ -100,11 +121,6 @@ export default function CreateReminderView() {
               />
               <Text>Generali</Text>
             </View>
-            <CustomTextInput
-              placeholder="Titolo del ricordo"
-              value={title}
-              onChangeText={setTitle}
-            />
             <View style={styles.container}>
               <Text style={styles.label}>
                 Numero di ripetizioni all'anno: {repetitions}
@@ -119,7 +135,7 @@ export default function CreateReminderView() {
             </View>
           </ThemedCard>
 
-          <ThemedCard>
+          <ThemedCard style={styles.card}>
             <View style={styles.cardHeader}>
               <Ionicons
                 style={{ marginRight: 8 }}
@@ -277,31 +293,37 @@ export default function CreateReminderView() {
           </ThemedCard>
         </>
       ) : (
-        <ThemedCard>
+        <ThemedCard style={styles.card}>
           <Text style={styles.label}>Data:</Text>
           <DateTimePicker
             textColor={datePickerText}
-            value={new Date()}
+            value={specificDate}
             mode="date"
             display="spinner"
-            onChange={(_, selectedTime) => console.log(selectedTime)}
+            onChange={(_, selectedTime) => {
+              setSpecificDate(selectedTime || specificDate);
+            }}
           />
           <Text style={styles.label}>Ora:</Text>
           <DateTimePicker
             textColor={datePickerText}
-            value={new Date()}
+            value={specificTime}
             mode="time"
             is24Hour={true}
             display="spinner"
-            onChange={(_, selectedTime) => console.log(selectedTime)}
+            onChange={(_, selectedTime) => {
+              setSpecificTime(selectedTime || specificTime);
+            }}
           />
         </ThemedCard>
       )}
-      <ThemedCard>
-        <ThemedText style={styles.randomNote}>
-          Il ricordo verrà programmato in un giorno casuale in base alle
-          preferenze selezionate.
-        </ThemedText>
+      <ThemedCard style={styles.card}>
+        {mode === 0 && (
+          <ThemedText style={styles.randomNote}>
+            Il ricordo verrà programmato in un giorno casuale in base alle
+            preferenze selezionate.
+          </ThemedText>
+        )}
         <ThemedButton text="Crea Ricordo" onPress={handleCreate} />
       </ThemedCard>
     </ThemedScrollView>
@@ -315,6 +337,9 @@ const styles = StyleSheet.create({
   title: {
     textAlign: "center",
     marginVertical: 16,
+  },
+  card: {
+    marginHorizontal: 16,
   },
   cardHeader: {
     flexDirection: "row",

@@ -1,18 +1,20 @@
 import React from "react";
 import { TextInput, StyleSheet } from "react-native";
+import { ThemedTextProps } from "./ThemedText";
 
-interface CustomTextInputProps {
+interface ThemedTextInputProps extends ThemedTextProps {
   placeholder: string;
   value: string;
   onChangeText: (text: string) => void;
-  style?: object;
+  style: any;
 }
 
-const CustomTextInput: React.FC<CustomTextInputProps> = ({
+const ThemedTextInput: React.FC<ThemedTextInputProps> = ({
   placeholder,
   value,
   onChangeText,
   style,
+  ...rest
 }) => {
   return (
     <TextInput
@@ -20,20 +22,18 @@ const CustomTextInput: React.FC<CustomTextInputProps> = ({
       placeholder={placeholder}
       value={value}
       onChangeText={onChangeText}
+      {...rest}
     />
   );
 };
 
 const styles = StyleSheet.create({
   input: {
-    color: "#000",
     borderWidth: 1,
-    tintColor: "#000",
-    borderColor: "#ccc",
     borderRadius: 4,
     padding: 8,
     marginBottom: 16,
   },
 });
 
-export default CustomTextInput;
+export default ThemedTextInput;
