@@ -1,7 +1,6 @@
 import type { SQLiteDatabase } from "expo-sqlite";
 
 export async function migrateDbIfNeeded(db: SQLiteDatabase) {
-  // console.log("Migrating database");
   await db.execAsync(`PRAGMA user_version = 0`); // Resetting the database
   const DATABASE_VERSION = 1;
   // set PRAGMA user_version = 1;
@@ -10,8 +9,7 @@ export async function migrateDbIfNeeded(db: SQLiteDatabase) {
   let { user_version: currentDbVersion } = (await db.getFirstAsync<Schema>(
     "PRAGMA user_version"
   )) ?? { user_version: 0 };
-  // console.log("Current db version", currentDbVersion);
-  // console.log("Target db version", DATABASE_VERSION);
+
   if (currentDbVersion >= DATABASE_VERSION) {
     return;
   }
@@ -59,12 +57,10 @@ export async function migrateDbIfNeeded(db: SQLiteDatabase) {
           preference_value TEXT NOT NULL
         );
       `);
-    } catch (error) {
-      console.error("Error while creating tables", error);
-    }
+    } catch (error) {}
 
     // Insert sample data
-    // console.log("Sample Data TODAY");
+
     // const statNotification = await db.prepareAsync(
     //   `INSERT INTO notifications (title, description, repeat_count, month_preference, months, day_preference, days_of_week, time_preference, start_time, end_time)
     //     VALUES ('Test notification', 'This is a test notification', 1, 'any', '', 'any', '', 'any', '09:00', '09:30')`
@@ -74,7 +70,7 @@ export async function migrateDbIfNeeded(db: SQLiteDatabase) {
     //   `INSERT INTO scheduled_notifications (notification_id, scheduled_date, scheduled_time)
     //     VALUES (?, ?, ?)`
     // );
-    // console.log("execNotification", execNotification.lastInsertRowId);
+
     // const today = new Date();
     // const date = today.toISOString().split("T")[0];
     // const time = today.toISOString().split("T")[1].split(".")[0];

@@ -144,9 +144,6 @@ const scheduleSpecificNotification = async (
     );
     return;
   }
-  console.log("data", data.date);
-  console.log("time", data.time);
-
   const date = new Date(data.date);
   const time = new Date(data.time);
 

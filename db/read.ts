@@ -4,7 +4,6 @@ import type { SQLiteDatabase } from "expo-sqlite";
 export const getTodayNotifications = async (db: SQLiteDatabase) => {
   const today = new Date();
   const date = today.toISOString().split("T")[0];
-  console.log("Today", date);
   return getScheduledNotificationByDate(db, date);
 };
 

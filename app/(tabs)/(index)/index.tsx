@@ -30,7 +30,6 @@ const Today: React.FC = () => {
     async function getReminders() {
       try {
         const result = await getTodayNotifications(db);
-        console.log("result", result);
         setNotification(result);
       } catch (error) {
         setNotification([]);
