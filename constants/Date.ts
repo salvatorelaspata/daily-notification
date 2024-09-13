@@ -43,3 +43,8 @@ export const momentOfTheDay: MomentOfTheDayProp = {
     end: new Date(0, 0, 0, 24, 0, 0),
   },
 };
+
+export function timeToString(time: number) {
+  const date = new Date(time);
+  return date.toISOString().split("T")[0];
+}

@@ -1,20 +1,11 @@
-import { ScheduledNotification, Union } from "@/types/types";
+import { Union } from "@/types/types";
 import type { SQLiteDatabase } from "expo-sqlite";
 
 export const getTodayNotifications = async (db: SQLiteDatabase) => {
-  const today = new Date().toISOString().split("T")[0]; // Formato YYYY-MM-DD
-  const statement = await db.prepareAsync(
-    "SELECT * FROM scheduled_notifications WHERE scheduled_date = ?"
-  );
-  try {
-    const result = await statement.executeAsync([today]);
-    return result;
-  } catch (error) {
-    console.error("Error while getting today's notifications", error);
-    return [];
-  } finally {
-    await statement.finalizeAsync();
-  }
+  // use getScheduledNotificationByDate
+  const today = new Date();
+  const date = today.toISOString().split("T")[0];
+  return getScheduledNotificationByDate(db, date);
 };
 
 export const getAllNotifications = async (db: SQLiteDatabase) => {

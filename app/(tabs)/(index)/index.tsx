@@ -1,10 +1,10 @@
-import React, { useState } from "react";
-import { View, FlatList, Text, StyleSheet, Image } from "react-native";
-import { Agenda } from "react-native-calendars";
+import React, { useEffect, useState } from "react";
+import { View, Text, StyleSheet, FlatList } from "react-native";
+import { Agenda, AgendaEntry, AgendaSchedule } from "react-native-calendars";
 import { format } from "date-fns";
-import { Notification, ScheduledNotification, Union } from "@/types/types";
+import { Notification, Union } from "@/types/types";
 import { useSQLiteContext } from "expo-sqlite";
-import { SafeAreaView } from "react-native-safe-area-context";
+
 import {
   getScheduledNotificationByDate,
   getTodayNotifications,
@@ -19,7 +19,7 @@ import { HelloWave } from "@/components/HelloWave";
 
 const Today: React.FC = () => {
   const db = useSQLiteContext();
-  const [notification, setNotification] = React.useState<Notification[]>([]);
+  const [notification, setNotification] = React.useState<Union[]>([]);
   const router = useRouter();
   const actions: FloatingAction[] = [
     {
@@ -30,11 +30,13 @@ const Today: React.FC = () => {
       },
     },
   ];
-  React.useEffect(() => {
+  useEffect(() => {
     async function getReminders() {
       try {
         const result = await getTodayNotifications(db);
-        if (result) setNotification(result as Notification[]);
+        console.log("result", result);
+
+        setNotification(result);
       } catch (error) {
         console.error("Error while getting all Today", error);
       }
@@ -52,13 +54,15 @@ const Today: React.FC = () => {
       <ThemedText>{item.day_preference}</ThemedText>
       <ThemedText>{item.days_of_week}</ThemedText>
       <ThemedText>{item.time_preference}</ThemedText>
-      <ThemedText>{format(item.start_time, "HH:mm")}</ThemedText>
+      {/* <ThemedText>{format(item.start_time, "HH:mm")}</ThemedText>
       <ThemedText>{format(item.end_time, "HH:mm")}</ThemedText>
-      <ThemedText>{format(item.created_at, "yyyy-MM-dd")}</ThemedText>
+      <ThemedText>{format(item.created_at, "yyyy-MM-dd")}</ThemedText> */}
+      <ThemedText>{item.start_time}</ThemedText>
+      <ThemedText>{item.end_time}</ThemedText>
+      <ThemedText>{item.created_at}</ThemedText>
       <ThemedText>{item.is_notified}</ThemedText>
     </View>
   );
-  const [items, setItems] = useState<any>({});
 
   interface Day {
     dateString: string;
@@ -77,13 +81,14 @@ const Today: React.FC = () => {
           db,
           day.dateString
         );
-        setItems(
-          items.map((item) => ({
-            name: item.title,
-            height: 50,
-            day: item.scheduled_date,
-          }))
-        );
+
+        // setItems(
+        //   items.map((item) => ({
+        //     name: item.title,
+        //     height: 50,
+        //     day: item.scheduled_date,
+        //   }))
+        // );
       } catch (error) {
         console.error("Error while getting items", error);
       }
@@ -131,13 +136,20 @@ const Today: React.FC = () => {
         {format(new Date(), "dd/MM/yyyy")}
       </ThemedText>
       {/* Ricordi passati? */}
-      <Agenda
-        items={items}
+      {/* <Agenda
+        items={notification}
         loadItemsForMonth={loadItems}
         renderItem={renderItem}
         renderEmptyDate={() => <View />}
         rowHasChanged={(r1: any, r2: any) => r1.name !== r2.name}
+      /> */}
+      {/* create orizontal flatlist with card item */}
+      <FlatList
+        data={notification}
+        renderItem={renderItem}
+        keyExtractor={(item) => item?.id?.toString() || ""}
       />
+
       <FloatingActionButton actions={actions} />
     </ThemedSafeAreaView>
   );

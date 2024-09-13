@@ -12,6 +12,7 @@ interface CreateNotification {
   db: SQLiteDatabase;
   args: Args;
 }
+// notifications
 export const createNotification = async ({
   db,
   args: {
@@ -45,3 +46,47 @@ export const createNotification = async ({
   // Calcola e inserisci le date programmate nella tabella scheduled_notifications
   // (Logica per calcolare le date basata su repeatCount, intervalDays, e daysOfWeek)
 };
+
+export const deleteNotification = async (db: SQLiteDatabase, id: number) => {
+  const statement = await db.prepareAsync(`
+    DELETE FROM notifications
+    WHERE id = ?
+  `);
+  try {
+    await statement.executeAsync([id]);
+  } catch (error) {
+    console.error("Error while deleting notification", error);
+  } finally {
+    await statement.finalizeAsync();
+  }
+};
+
+export const updateNotification = async (
+  db: SQLiteDatabase,
+  id: number,
+  args: Args
+) => {
+  const statement = await db.prepareAsync(`
+    UPDATE notifications
+    SET title = ?, description = ?, repeat_count = ?, interval_days = ?, days_of_week = ?, notification_time = ?
+    WHERE id = ?
+  `);
+  try {
+    await statement.executeAsync([
+      args.title,
+      args.description,
+      args.repeatCount,
+      args.intervalDays,
+      args.daysOfWeek,
+      args.notificationTime,
+      id,
+    ]);
+  } catch (error) {
+    console.error("Error while updating notification", error);
+  } finally {
+    await statement.finalizeAsync();
+  }
+};
+
+// scheduled_notifications TODO: Implementare
+export const createScheduledNotificationFromPreferences = async () => {};
