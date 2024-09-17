@@ -28,6 +28,6 @@ export type Union = Notification & ScheduledNotification;
 
 export type Setting = {
   id?: number;
-  preference_key: string;
-  preference_value: string;
+  start_time?: string;
+  end_time?: string;
 };

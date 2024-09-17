@@ -12,10 +12,32 @@ export const getAllNotifications = async (db: SQLiteDatabase) => {
     const result = await db.getAllAsync(
       `SELECT *
       FROM scheduled_notifications  as s
-      INNER JOIN notifications AS n
+      LEFT JOIN notifications AS n
       ON s.notification_id = n.id;`
     );
-    return result;
+    // group by notification id
+    const grouped = result.reduce((accumulator: any[], currentValue: any) => {
+      const existing = accumulator.findIndex((i) => i.id === currentValue.id);
+      if (existing !== -1) {
+        accumulator[existing].scheduled.push({
+          scheduled_date: currentValue.scheduled_date,
+          scheduled_time: currentValue.scheduled_time,
+        });
+      } else {
+        accumulator.push({
+          ...currentValue,
+          scheduled: [
+            {
+              scheduled_date: currentValue.scheduled_date,
+              scheduled_time: currentValue.scheduled_time,
+            },
+          ],
+        });
+      }
+      return accumulator;
+    }, []);
+    console.log({ grouped });
+    return grouped;
   } catch (error) {
     console.error("Error while getting all notifications", error);
     return [];
@@ -43,5 +65,15 @@ export const getScheduledNotificationByDate = async (
     return [];
   } finally {
     await statement.finalizeAsync();
+  }
+};
+
+export const getSettings = async (db: SQLiteDatabase) => {
+  try {
+    const result = await db.getAllAsync(`SELECT * FROM settings`);
+    return result;
+  } catch (error) {
+    console.error("Error while getting settings", error);
+    return [];
   }
 };

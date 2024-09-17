@@ -53,8 +53,8 @@ export async function migrateDbIfNeeded(db: SQLiteDatabase) {
         -- DROP TABLE IF EXISTS settings;
         CREATE TABLE IF NOT EXISTS settings (
           id INTEGER PRIMARY KEY AUTOINCREMENT,
-          preference_key TEXT NOT NULL,
-          preference_value TEXT NOT NULL
+          start_time TIME NOT NULL,
+          end_time TIME NOT NULL
         );
       `);
     } catch (error) {}

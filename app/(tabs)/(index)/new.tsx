@@ -14,7 +14,6 @@ import { ThemedCard } from "@/components/ThemedCard";
 import { ThemedSegmentedButton } from "@/components/ThemedSegmentedButton";
 import { createReminder } from "@/db/insert";
 import { useSQLiteContext } from "expo-sqlite";
-import CustomTextInput from "@/components/TextInput";
 import ThemedTextInput from "@/components/ThemedTextInput";
 import { router } from "expo-router";
 
@@ -71,7 +70,7 @@ export default function CreateReminderView() {
     try {
       await createReminder(db, {
         title,
-        mode: mode === 0 ? "random" : "specific",
+        mode: mode.toString(),
         date: specificDate.toISOString(),
         time: specificTime.toISOString(),
         repeat_count: repetitions,

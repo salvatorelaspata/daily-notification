@@ -13,6 +13,9 @@ export const createNotification = async ({
     title,
     description,
     repeat_count,
+    mode,
+    date,
+    time,
     month_preference,
     months,
     day_preference,
@@ -23,14 +26,17 @@ export const createNotification = async ({
   },
 }: CreateNotification) => {
   const statement = await db.prepareAsync(`
-    INSERT INTO notifications (title, description, repeat_count, month_preference, months, day_preference, days_of_week, time_preference, start_time, end_time)
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    INSERT INTO notifications (title, description, repeat_count, mode, date, time, month_preference, months, day_preference, days_of_week, time_preference, start_time, end_time)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
   `);
   try {
     const result = await statement.executeAsync([
       title || null,
       description || null,
       repeat_count || 0,
+      mode || null,
+      date || null,
+      time || null,
       month_preference || null,
       months || null,
       day_preference || null,

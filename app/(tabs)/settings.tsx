@@ -1,8 +1,9 @@
 import Ionicons from "@expo/vector-icons/Ionicons";
-import { StyleSheet } from "react-native";
+import { Alert, StyleSheet } from "react-native";
 
 // import { Collapsible } from "@/components/Collapsible";
 // import { ExternalLink } from "@/components/ExternalLink";
+import DateTimePicker from "@react-native-community/datetimepicker";
 import ParallaxScrollView from "@/components/ParallaxScrollView";
 import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
@@ -10,8 +11,17 @@ import { useEffect, useState } from "react";
 import { useSQLiteContext } from "expo-sqlite";
 import { Collapsible } from "@/components/Collapsible";
 import { ExternalLink } from "@/components/ExternalLink";
+import { ThemedButton } from "@/components/ThemedButton";
+import { deleteAllTables } from "@/db/delete";
+import { useThemeColor } from "@/hooks/useThemeColor";
 
 export default function Settings() {
+  // const [specificDate, setSpecificDate] = useState(new Date());
+  const [specificStartTime, setSpecificStartTime] = useState(new Date());
+  const [specificEndTime, setSpecificEndTime] = useState(new Date());
+
+  // const datePickerText = useThemeColor({}, "datePickerText");
+
   const [version, setVersion] = useState("");
   const db = useSQLiteContext();
 
@@ -51,6 +61,57 @@ export default function Settings() {
             <ThemedText type="link">Learn more</ThemedText>
           </ExternalLink>
         </ThemedView>
+      </Collapsible>
+      <Collapsible title="Time Limitations">
+        <ThemedText>
+          You can set a specific time for the notification to be sent between:
+          <DateTimePicker
+            // textColor={datePickerText}
+            value={specificStartTime}
+            mode="time"
+            is24Hour={true}
+            display="calendar"
+            onChange={(_, selectedTime) => {
+              setSpecificStartTime(selectedTime || specificStartTime);
+            }}
+          />
+          <DateTimePicker
+            // textColor={datePickerText}
+            value={specificEndTime}
+            mode="time"
+            is24Hour={true}
+            display="calendar"
+            onChange={(_, selectedTime) => {
+              setSpecificEndTime(selectedTime || specificEndTime);
+            }}
+          />
+        </ThemedText>
+      </Collapsible>
+      <Collapsible title="Danger zone">
+        <ThemedText>
+          This section is for development purposes only. You can use it to
+          delete all notifications and scheduled notifications from the database
+        </ThemedText>
+        <ThemedButton
+          text="Delete all notifications"
+          type="outline"
+          onPress={async () => {
+            Alert.alert("Delete all notifications", "Are you sure?", [
+              {
+                text: "Cancel",
+                style: "cancel",
+              },
+              {
+                text: "Delete",
+                style: "destructive",
+                onPress: async () => {
+                  await deleteAllTables(db);
+                  Alert.alert("Notifications deleted");
+                },
+              },
+            ]);
+          }}
+        />
       </Collapsible>
       {/* <Collapsible title="File-based routing">
         <ThemedText>

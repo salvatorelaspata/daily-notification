@@ -5,6 +5,10 @@ interface NotificationState {
   notifications: Notification[];
   modalCreateVisible: boolean;
   createNotification: Omit<Notification, "id" | "created_at" | "is_notified">;
+  timeLimitations: {
+    specificStartTime: Date;
+    specificEndTime: Date;
+  };
 }
 
 export const notificationState = proxy<NotificationState>({
@@ -21,6 +25,13 @@ export const notificationState = proxy<NotificationState>({
     time_preference: "any",
     start_time: "",
     end_time: "",
+    mode: "",
+    date: "",
+    time: "",
+  },
+  timeLimitations: {
+    specificStartTime: new Date(),
+    specificEndTime: new Date(),
   },
 });
 
@@ -44,5 +55,10 @@ export const notificationActions = {
   },
   hideModalCreate: () => {
     notificationState.modalCreateVisible = false;
+  },
+  setTImeLimitations: (
+    timeLimitations: NotificationState["timeLimitations"]
+  ) => {
+    notificationState.timeLimitations = timeLimitations;
   },
 };
