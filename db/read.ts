@@ -7,6 +7,30 @@ export const getTodayNotifications = async (db: SQLiteDatabase) => {
   return getScheduledNotificationByDate(db, date);
 };
 
+export const getRecentNotifications = async (db: SQLiteDatabase) => {
+  const today = new Date();
+  const date = today.toISOString().split("T")[0];
+  const statement = await db.prepareAsync(
+    `SELECT *
+      FROM scheduled_notifications  as s
+      INNER JOIN notifications AS n
+      ON s.notification_id = n.id
+      WHERE DATE(s.scheduled_date) < DATE(?)
+      LIMIT 10`
+  );
+  try {
+    const result = await statement.executeAsync([date]);
+    const all = await result.getAllAsync();
+
+    return all as Union[];
+  } catch (error) {
+    console.error("Error while getting recent notifications", error);
+    return [];
+  } finally {
+    await statement.finalizeAsync();
+  }
+};
+
 export const getAllNotifications = async (db: SQLiteDatabase) => {
   try {
     const result = await db.getAllAsync(

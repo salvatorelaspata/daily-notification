@@ -58,7 +58,7 @@ const Notifications: React.FC = () => {
                   item.months
                     .split(",")
                     .map((m: string) => (
-                      <ThemedChip key={m} text={months[parseInt(m)]} />
+                      <ThemedChip key={m} text={months[parseInt(m)]} disabled />
                     ))}
               </View>
             </>
