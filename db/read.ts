@@ -16,6 +16,7 @@ export const getRecentNotifications = async (db: SQLiteDatabase) => {
       INNER JOIN notifications AS n
       ON s.notification_id = n.id
       WHERE DATE(s.scheduled_date) < DATE(?)
+      ORDER BY s.scheduled_date DESC 
       LIMIT 10`
   );
   try {
@@ -33,12 +34,15 @@ export const getRecentNotifications = async (db: SQLiteDatabase) => {
 
 export const getAllNotifications = async (db: SQLiteDatabase) => {
   try {
+    // return all notification scheduled from notifications
     const result = await db.getAllAsync(
       `SELECT *
-      FROM scheduled_notifications  as s
-      LEFT JOIN notifications AS n
-      ON s.notification_id = n.id;`
+      FROM scheduled_notifications as s
+      INNER JOIN notifications AS n
+      ON s.notification_id = n.id`
     );
+
+    // console.log(JSON.stringify(result, null, 2));
     // group by notification id
     const grouped = result.reduce((accumulator: any[], currentValue: any) => {
       const existing = accumulator.findIndex((i) => i.id === currentValue.id);
@@ -60,7 +64,7 @@ export const getAllNotifications = async (db: SQLiteDatabase) => {
       }
       return accumulator;
     }, []);
-    console.log({ grouped });
+    // console.log(JSON.stringify(grouped, null, 2));
     return grouped;
   } catch (error) {
     console.error("Error while getting all notifications", error);
@@ -77,7 +81,8 @@ export const getScheduledNotificationByDate = async (
       FROM scheduled_notifications  as s
       INNER JOIN notifications AS n
       ON s.notification_id = n.id
-      WHERE DATE(s.scheduled_date) = DATE(?)`
+      WHERE DATE(s.scheduled_date) = DATE(?)
+      ORDER BY s.scheduled_date DESC`
   );
   try {
     const result = await statement.executeAsync([date]);

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { Suspense, useEffect, useState } from "react";
 import { View, FlatList, Text, StyleSheet, Image } from "react-native";
 
 import { format } from "date-fns";
@@ -8,22 +8,39 @@ import { getAllNotifications } from "@/db/read";
 import { ThemedSafeAreaView } from "@/components/ThemedSafeAreaView";
 import { useIsFocused } from "@react-navigation/native";
 import { ThemedText } from "@/components/ThemedText";
-import { ThemedView } from "@/components/ThemedView";
 import SegmentedControl from "@react-native-segmented-control/segmented-control";
 import { ThemedChip } from "@/components/ThemedChip";
 import { months } from "@/constants/Date";
+import { useSnapshot } from "valtio";
+import { notificationActions, notificationState } from "@/store/notification";
+import { ThemedView } from "@/components/ThemedView";
+import { ThemedCard } from "@/components/ThemedCard";
+import { ThemedCardText } from "@/components/ThemedCardText";
+import { useThemeColor } from "@/hooks/useThemeColor";
+import { ThemedSegmentedButton } from "@/components/ThemedSegmentedButton";
 
 const Notifications: React.FC = () => {
   const isFocused = useIsFocused();
   const db = useSQLiteContext();
-  const [reminders, setReminders] = useState<Union[]>([]);
+  const { notifications } = useSnapshot(notificationState);
+  const { setNotifications } = notificationActions;
+  const [loading, setLoading] = useState(true);
+
+  const cardColor = useThemeColor({}, "cardText");
 
   useEffect(() => {
+    console.log(loading);
     async function getReminders() {
+      console.log(loading);
+      setLoading(true);
       try {
-        setReminders([]);
         const result = await getAllNotifications(db);
-        if (result) setReminders(result as Union[]);
+
+        if (result) {
+          setNotifications(result as Union[]);
+          setLoading(false);
+          console.log(loading);
+        }
       } catch (error) {
         console.error("Error while getting all notifications", error);
       }
@@ -32,27 +49,31 @@ const Notifications: React.FC = () => {
   }, [isFocused]);
 
   const renderItem = ({ item }: { item: any }) => (
-    <View style={styles.notificationItem}>
-      <ThemedText>title: {item.title}</ThemedText>
-      <ThemedText>description: {item.description}</ThemedText>
-      <ThemedText>repeat_count: {item.repeat_count}</ThemedText>
-      <ThemedText>mode: {item.mode}</ThemedText>
-      <SegmentedControl
+    <ThemedCard>
+      <ThemedCardText type="title">{item.title}</ThemedCardText>
+      {/* <ThemedCardText>{item.description}</ThemedCardText> */}
+      {/* <ThemedCardText>repeat_count: {item.repeat_count}</ThemedCardText> */}
+      {/* <ThemedCardText>mode: {item.mode}</ThemedCardText> */}
+      <ThemedSegmentedButton
         enabled={false}
         values={["Random", "Specific"]}
         selectedIndex={item.mode === "0" ? 0 : 1}
       />
       {item.mode === "1" ? (
         <>
-          <ThemedText>date: {format(item.date, "dd-MM-yyyy")}</ThemedText>
-          <ThemedText>time: {format(item.time, "HH:mm")}</ThemedText>
+          <ThemedCardText type="defaultSemiBold">
+            {format(item.date, "dd-MM-yyyy")}
+          </ThemedCardText>
+          <ThemedCardText type="defaultSemiBold">
+            {format(item.time, "HH:mm")}
+          </ThemedCardText>
         </>
       ) : (
         <>
-          {/* <ThemedText>month_preference: {item.month_preference}</ThemedText> */}
+          {/* <ThemedCardText>month_preference: {item.month_preference}</ThemedCardText> */}
           {item.month_preference !== "any" && (
             <>
-              <ThemedText>months: {item.months}</ThemedText>
+              <ThemedCardText>months: {item.months}</ThemedCardText>
               <View style={styles.montsContainer}>
                 {item.months &&
                   item.months
@@ -64,52 +85,64 @@ const Notifications: React.FC = () => {
             </>
           )}
 
-          <ThemedText>day_preference: {item.day_preference}</ThemedText>
-          <ThemedText>days_of_week: {item.days_of_week}</ThemedText>
-          <ThemedText>time_preference: {item.time_preference}</ThemedText>
-          <ThemedText>
+          {/* <ThemedCardText>day_preference: {item.day_preference}</ThemedCardText>
+          <ThemedCardText>days_of_week: {item.days_of_week}</ThemedCardText>
+          <ThemedCardText>
+            time_preference: {item.time_preference}
+          </ThemedCardText>
+          <ThemedCardText>
             start_time: {format(item.start_time, "HH:mm")}
-          </ThemedText>
-          <ThemedText>end_time: {format(item.end_time, "HH:mm")}</ThemedText>
+          </ThemedCardText>
+          <ThemedCardText>
+            end_time: {format(item.end_time, "HH:mm")}
+          </ThemedCardText> */}
         </>
       )}
-      <ThemedText>
+      {/* <ThemedCardText>
         created_at: {format(item.created_at, "dd-MM-yyyy HH:mm")}
-      </ThemedText>
+      </ThemedCardText> */}
       <View>
-        <ThemedText>Scheduled:</ThemedText>
+        <ThemedCardText>Scheduled:</ThemedCardText>
         {item.scheduled &&
           item.scheduled.map((s: any, index: number) => (
             <View key={`${s.scheduled_date}${s.scheduled_time}`}>
-              <ThemedText>
+              <ThemedCardText>
                 {index + 1}) {format(s.scheduled_date, "dd-MM-yyyy")} -{" "}
                 {format(s.scheduled_time, "HH:mm")}
-              </ThemedText>
+              </ThemedCardText>
             </View>
           ))}
       </View>
-      <ThemedText>is_notified: {item.is_notified}</ThemedText>
-    </View>
+      {/* <ThemedCardText>is_notified: {item.is_notified}</ThemedCardText> */}
+    </ThemedCard>
   );
 
   return (
     <ThemedSafeAreaView style={styles.container}>
-      <FlatList
-        data={reminders}
-        keyExtractor={(item) => item?.id?.toString() ?? ""}
-        renderItem={renderItem}
-        ListEmptyComponent={
-          <View style={styles.container}>
-            <Text style={styles.emptyText}>
-              No reminders have been added yet.
-            </Text>
-            <Image
-              source={require("@/assets/images/no-record-found.png")}
-              style={{ alignSelf: "center" }}
-            />
-          </View>
-        }
-      />
+      <ThemedView
+        style={{ flexDirection: "row", justifyContent: "space-between" }}
+      >
+        <ThemedText type="title">Notifications</ThemedText>
+        <ThemedChip text={notifications.length.toString() || "0"} disabled />
+      </ThemedView>
+      <Suspense fallback={<Text>Loading...</Text>}>
+        <FlatList
+          data={notifications}
+          keyExtractor={(item) => item?.id?.toString() ?? ""}
+          renderItem={renderItem}
+          ListEmptyComponent={
+            <View style={styles.container}>
+              <Text style={styles.emptyText}>
+                No reminders have been added yet.
+              </Text>
+              <Image
+                source={require("@/assets/images/no-record-found.png")}
+                style={{ alignSelf: "center" }}
+              />
+            </View>
+          }
+        />
+      </Suspense>
     </ThemedSafeAreaView>
   );
 };
@@ -118,12 +151,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 16,
-  },
-  notificationItem: {
-    backgroundColor: "#f4f4f4",
-    padding: 12,
-    marginVertical: 8,
-    borderRadius: 8,
   },
   emptyText: {
     fontSize: 16,

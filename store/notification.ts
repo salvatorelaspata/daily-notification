@@ -1,64 +1,26 @@
-import { Notification } from "@/types/types";
+import { Union } from "@/types/types";
 import { proxy } from "valtio";
 
 interface NotificationState {
-  notifications: Notification[];
-  modalCreateVisible: boolean;
-  createNotification: Omit<Notification, "id" | "created_at" | "is_notified">;
-  timeLimitations: {
-    specificStartTime: Date;
-    specificEndTime: Date;
-  };
+  todayNotifications: Union[];
+  recentNotifications: Union[];
+  notifications: Union[];
 }
 
 export const notificationState = proxy<NotificationState>({
+  todayNotifications: [],
+  recentNotifications: [],
   notifications: [],
-  modalCreateVisible: false,
-  createNotification: {
-    title: "",
-    description: "",
-    repeat_count: 1,
-    month_preference: "any",
-    months: "",
-    day_preference: "any",
-    days_of_week: "",
-    time_preference: "any",
-    start_time: "",
-    end_time: "",
-    mode: "",
-    date: "",
-    time: "",
-  },
-  timeLimitations: {
-    specificStartTime: new Date(),
-    specificEndTime: new Date(),
-  },
 });
 
 export const notificationActions = {
-  addNotification: (notification: Notification) => {
-    notificationState.notifications.push(notification);
+  setTodayNotifications: (notifications: Union[]) => {
+    notificationState.todayNotifications = notifications;
   },
-  removeNotification: (notification: Notification) => {
-    notificationState.notifications = notificationState.notifications.filter(
-      (n) => n.id !== notification.id
-    );
+  setRecentNotifications: (notifications: Union[]) => {
+    notificationState.recentNotifications = notifications;
   },
-  updateNotification: (notification: Notification) => {
-    const index = notificationState.notifications.findIndex(
-      (n) => n.id === notification.id
-    );
-    notificationState.notifications[index] = notification;
-  },
-  showModalCreate: () => {
-    notificationState.modalCreateVisible = true;
-  },
-  hideModalCreate: () => {
-    notificationState.modalCreateVisible = false;
-  },
-  setTImeLimitations: (
-    timeLimitations: NotificationState["timeLimitations"]
-  ) => {
-    notificationState.timeLimitations = timeLimitations;
+  setNotifications: (notifications: Union[]) => {
+    notificationState.notifications = notifications;
   },
 };

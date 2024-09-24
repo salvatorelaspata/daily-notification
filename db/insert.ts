@@ -82,93 +82,52 @@ export const createReminder = async (
 
     // Schedule notifications
     if (id) {
-      if (data.mode === "random") {
-        // Random mode
-        await scheduleRandomNotifications(db, id, data);
-      } else {
-        if (!data.date || !data.time)
-          throw new Error("Date and time are required");
+      const start = new Date();
+      const end = new Date();
+      end.setFullYear(end.getFullYear() + 1);
 
-        // Specific mode
-        await scheduleSpecificNotification(db, id, data);
+      const statement = await db.prepareAsync(`
+        INSERT INTO scheduled_notifications (notification_id, scheduled_date, scheduled_time)
+        VALUES (?, ?, ?)
+      `);
+      try {
+        for (let i = 0; i < data.repeat_count; i++) {
+          // check if the mode is specific or random (random === '0')
+          if (data.mode === "0") {
+            const scheduled_date = generateRandomDate(start, end, data);
+            const scheduled_time = generateRandomTime(start, end);
+
+            try {
+              await statement.executeAsync([
+                id,
+                scheduled_date.toISOString(),
+                scheduled_time.toISOString(),
+              ]);
+            } catch (error) {
+              console.error("Error while creating reminder", error);
+            }
+          } else {
+            if (!data.date || !data.time) {
+              console.error(
+                "Error while creating reminder: date and time are required"
+              );
+              return;
+            }
+            try {
+              await statement.executeAsync([id, data.date, data.time]);
+            } catch (error) {
+              console.error("Error while creating reminder", error);
+            }
+          }
+        }
+      } finally {
+        await statement.finalizeAsync();
       }
     } else {
       console.error("Errore durante la creazione del ricordo:");
     }
   } catch (error) {
     throw new Error(`${error}`);
-  }
-};
-
-const scheduleRandomNotifications = async (
-  tx: SQLiteDatabase,
-  notificationId: number,
-  data: Partial<Notification>
-) => {
-  if (!data.start_time || !data.end_time || !data.repeat_count) {
-    console.error(
-      "Error while scheduling random notification: start_time and end_time are required"
-    );
-    return;
-  }
-  const now = new Date();
-  const endOfYear = new Date(now.getFullYear(), 11, 31);
-  const start = new Date(data.start_time);
-  const end = new Date(data.end_time);
-  for (let i = 0; i < data.repeat_count; i++) {
-    let scheduledDate = generateRandomDate(now, endOfYear, data);
-    let scheduledTime = generateRandomTime(start, end);
-
-    const statement = await tx.prepareAsync(
-      `INSERT INTO scheduled_notifications (notification_id, scheduled_date, scheduled_time)
-       VALUES (?, ?, ?)`
-    );
-    try {
-      await statement.executeAsync([
-        notificationId,
-        scheduledDate.toISOString(),
-        scheduledTime.toISOString(),
-      ]);
-
-      console.log("Scheduled notification in date:", scheduledDate);
-    } catch (error) {
-      console.error("Error while scheduling random notification", error);
-    } finally {
-      await statement.finalizeAsync();
-    }
-  }
-};
-
-const scheduleSpecificNotification = async (
-  tx: SQLiteDatabase,
-  notificationId: number,
-  data: Partial<Notification>
-) => {
-  if (!data.date || !data.time || !data.repeat_count) {
-    console.error(
-      "Error while scheduling specific notification: date and time are required"
-    );
-    return;
-  }
-  const date = new Date(data.date);
-  const time = new Date(data.time);
-
-  // Schedule notifications based on month preference
-  const statement = await tx.prepareAsync(
-    `INSERT INTO scheduled_notifications (notification_id, scheduled_date, scheduled_time)
-         VALUES (?, ?, ?)`
-  );
-  try {
-    await statement.executeAsync([
-      notificationId,
-      date.toISOString(),
-      time.toISOString(),
-    ]);
-    console.log("Scheduled notification in date:", date);
-  } catch (error) {
-    console.error("Error while scheduling specific notification", error);
-  } finally {
-    await statement.finalizeAsync();
   }
 };
 
@@ -184,8 +143,9 @@ const generateRandomDate = (
   let date = new Date(
     start.getTime() + Math.random() * (end.getTime() - start.getTime())
   );
+  // Selected months
   const m = data.months.split(",").map((m) => parseInt(m));
-  // Adjust based on month preference
+  // check if the month is specified (month_preference === "specific")
   if (data.month_preference === "specific" && m.length > 0) {
     date.setMonth(m[Math.floor(Math.random() * m.length)]);
   }
@@ -197,7 +157,9 @@ const generateRandomDate = (
     );
     return new Date();
   }
+  // Selected days
   const d = data.days_of_week.split(",").map((d) => parseInt(d));
+  // check if the day is specified (day_preference === "specific")
   if (data.day_preference === "specific") {
     let validDays = d;
     if (d.indexOf(0) > -1 && d.indexOf(6) > -1)

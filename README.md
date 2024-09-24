@@ -1,50 +1,47 @@
-# Welcome to your Expo app 👋
+# Daily Notification
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+Daily Notification è un'applicazione mobile che ti aiuta a gestire e ricevere promemoria giornalieri. L'app è costruita utilizzando React Native ed Expo.
 
-## Get started
+## Struttura del Progetto
 
-1. Install dependencies
+La struttura del progetto è la seguente:
 
-   ```bash
+### Cartelle Principali
+
+- **app/**: Contiene i file principali dell'applicazione, inclusi layout e schermate.
+- **assets/**: Contiene risorse come font e immagini.
+- **components/**: Contiene componenti riutilizzabili
+- **constants/**: Contiene costanti utilizzate nell'app.
+- **db/**: Contiene funzioni per l'interazione con il database SQLite.
+- **hooks/**: Contiene hook personalizzati.
+- **scripts/**: Contiene script di utilità come [`reset-project.js`]
+- **store/**: Contiene lo stato globale gestito con Valtio.
+- **types/**: Contiene definizioni di tipi TypeScript.
+
+Il routing è gestito con React Navigation e le schermate sono divise in stack e tab navigator.
+
+## Installazione
+
+1. Clona il repository:
+
+   ```sh
+   git clone https://github.com/salvatorelaspata/daily-notification.git
+   cd daily-notification
+   ```
+
+2. Installa le dipendenze:
+
+   ```sh
    npm install
    ```
 
-2. Start the app
-
-   ```bash
-    npx expo start
+3. Avvia l'applicazione:
+   ```sh
+   npm start
    ```
 
-In the output, you'll find options to open the app in a
+## Getting Started
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+Per iniziare a sviluppare, puoi utilizzare il comando `npm start` per avviare Expo e vedere l'applicazione in tempo reale sul tuo dispositivo o simulatore.
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
-
-## Get a fresh project
-
-When you're ready, run:
-
-```bash
-npm run reset-project
-```
-
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
-
-## Learn more
-
-To learn more about developing your project with Expo, look at the following resources:
-
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
-
-## Join the community
-
-Join our community of developers creating universal apps.
-
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+Utilizzare quindi l'app Expo Go sul proprio dispositivo per scansionare il codice QR e visualizzare l'applicazione.

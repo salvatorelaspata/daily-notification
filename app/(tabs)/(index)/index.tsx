@@ -8,17 +8,23 @@ import { ThemedText } from "@/components/ThemedText";
 import FloatingActionButton, {
   FloatingAction,
 } from "@/components/FloatingActionButton";
-import { Href, useRouter } from "expo-router";
+import { Href, Link, useRouter } from "expo-router";
 import { ThemedSafeAreaView } from "@/components/ThemedSafeAreaView";
 import { HelloWave } from "@/components/HelloWave";
 import { ThemedCard } from "@/components/ThemedCard";
 import { ThemedView } from "@/components/ThemedView";
 import { Ionicons } from "@expo/vector-icons";
+import { useIsFocused } from "@react-navigation/native";
+import { useSnapshot } from "valtio";
+import { notificationActions, notificationState } from "@/store/notification";
+import { ThemedCardText } from "@/components/ThemedCardText";
 
 const Today: React.FC = () => {
+  const isFocused = useIsFocused();
   const db = useSQLiteContext();
-  const [notification, setNotification] = React.useState<Union[]>([]);
-  const [recent, setRecent] = React.useState<Union[]>([]);
+  const { todayNotifications, recentNotifications } =
+    useSnapshot(notificationState);
+  const { setTodayNotifications, setRecentNotifications } = notificationActions;
   const router = useRouter();
   const actions: FloatingAction[] = [
     {
@@ -34,14 +40,14 @@ const Today: React.FC = () => {
       try {
         const result = await getTodayNotifications(db);
         const recent = await getRecentNotifications(db);
-        setNotification(result);
-        setRecent(recent);
+        setTodayNotifications(result);
+        setRecentNotifications(recent);
       } catch (error) {
-        setNotification([]);
+        setTodayNotifications([]);
       }
     }
-    getReminders();
-  }, []);
+    if (isFocused) getReminders();
+  }, [isFocused]);
 
   const renderRecentDays = ({ item }: { item: any }) => (
     <ThemedCard
@@ -53,19 +59,19 @@ const Today: React.FC = () => {
         justifyContent: "space-between",
       }}
     >
-      <ThemedText type="defaultSemiBold">{item.title}</ThemedText>
-      <ThemedText type="default" style={{ textAlign: "right" }}>
+      <ThemedCardText type="defaultSemiBold">{item.title}</ThemedCardText>
+      <ThemedCardText type="default" style={{ textAlign: "right" }}>
         {format(item.scheduled_time, "dd-MM-yyyy HH:mm")}
-      </ThemedText>
+      </ThemedCardText>
     </ThemedCard>
   );
 
-  const renderItem = ({ item }: { item: Union }) => (
+  const renderTodayNotificationItem = ({ item }: { item: Union }) => (
     <ThemedCard>
-      <ThemedText type="title">{item.title}</ThemedText>
-      <ThemedText type="subtitle">
+      <ThemedCardText type="title">{item.title}</ThemedCardText>
+      <ThemedCardText type="subtitle">
         {format(item.scheduled_time, "HH:mm")}
-      </ThemedText>
+      </ThemedCardText>
     </ThemedCard>
   );
   return (
@@ -78,34 +84,29 @@ const Today: React.FC = () => {
         {format(new Date(), "dd/MM/yyyy")}
       </ThemedText>
 
-      <ThemedView style={{ marginTop: 20 }}>
+      <ThemedView style={{ flex: 1, marginTop: 20 }}>
         <ThemedText type="link">Today's Reminders </ThemedText>
         <FlatList
-          data={notification}
-          renderItem={renderItem}
+          data={todayNotifications}
+          renderItem={renderTodayNotificationItem}
           keyExtractor={(item) => item?.id?.toString() || ""}
+          style={{ flex: 1 }}
           ListEmptyComponent={
-            // create card like recent days with + icon to create a new reminder
-            <ThemedCard
-              style={{
-                width: 150,
-                height: 150,
-                marginRight: 20,
-                justifyContent: "center",
-                alignItems: "center",
-              }}
-            >
-              <Ionicons name="add-circle" size={48} color="black" />
-              <ThemedText> No Reminders </ThemedText>
+            <ThemedCard>
+              <ThemedText type="title">
+                <Ionicons name="add-circle" size={48} color="black" />
+              </ThemedText>
+              <ThemedText type="subtitle">No Reminders</ThemedText>
             </ThemedCard>
           }
         />
       </ThemedView>
-
       <ThemedView style={{ marginTop: 20 }}>
-        <ThemedText type="link">Recent Days {`>`}</ThemedText>
+        <Link href={"/(tabs)/notifications" as Href<string>}>
+          <ThemedText type="link">Recent Days {`>`}</ThemedText>
+        </Link>
         <FlatList
-          data={recent}
+          data={recentNotifications}
           renderItem={renderRecentDays}
           keyExtractor={(item) => item?.id?.toString() || ""}
           horizontal
