@@ -1,47 +1,43 @@
 # Daily Notification
 
-Daily Notification è un'applicazione mobile che ti aiuta a gestire e ricevere promemoria giornalieri. L'app è costruita utilizzando React Native ed Expo.
+Daily Notification is a mobile application that helps you manage and receive daily reminders. The app is built using React Native and Expo.
 
-## Struttura del Progetto
+## Project Structure
 
-La struttura del progetto è la seguente:
+The project structure is as follows:
 
-### Cartelle Principali
+### Main Folders
 
-- **app/**: Contiene i file principali dell'applicazione, inclusi layout e schermate.
-- **assets/**: Contiene risorse come font e immagini.
-- **components/**: Contiene componenti riutilizzabili
-- **constants/**: Contiene costanti utilizzate nell'app.
-- **db/**: Contiene funzioni per l'interazione con il database SQLite.
-- **hooks/**: Contiene hook personalizzati.
-- **scripts/**: Contiene script di utilità come [`reset-project.js`]
-- **store/**: Contiene lo stato globale gestito con Valtio.
-- **types/**: Contiene definizioni di tipi TypeScript.
+- **app/**: Contains the main application files, including layouts and screens.
+- **assets/**: Contains resources such as fonts and images.
+- **components/**: Contains reusable components
+- **constants/**: Contains constants used in the app.
+- **db/**: Contains functions for interacting with the SQLite database.
+- **hooks/**: Contains custom hooks.
+- **scripts/**: Contains utility scripts such as [`reset-project.js`]
+- **store/**: Contains the global state managed with Valtio.
+- **types/**: Contains TypeScript type definitions.
 
-Il routing è gestito con React Navigation e le schermate sono divise in stack e tab navigator.
+Routing is handled with React Navigation and screens are divided into stack and tab navigators.
 
-## Installazione
+## Installation
 
-1. Clona il repository:
+1. Clone the repository:
 
    ```sh
    git clone https://github.com/salvatorelaspata/daily-notification.git
    cd daily-notification
+
    ```
 
-2. Installa le dipendenze:
+2. Install dependencies:
 
    ```sh
    npm install
    ```
 
-3. Avvia l'applicazione:
-   ```sh
-   npm start
-   ```
-
 ## Getting Started
 
-Per iniziare a sviluppare, puoi utilizzare il comando `npm start` per avviare Expo e vedere l'applicazione in tempo reale sul tuo dispositivo o simulatore.
+To start developing, you can use the `npm start` command to start Expo and see the application in real-time on your device or simulator.
 
-Utilizzare quindi l'app Expo Go sul proprio dispositivo per scansionare il codice QR e visualizzare l'applicazione.
+Then use the Expo Go app on your device to scan the QR code and view the application.
