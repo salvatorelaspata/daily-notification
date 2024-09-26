@@ -17,7 +17,7 @@ export default function TabLayout() {
     >
       {/* create tabs for Notifications, AllNotifications and Calendar */}
       <Tabs.Screen
-        name="(index)"
+        name="index"
         options={{
           title: "Today",
           tabBarIcon: ({ color, focused }) => (
@@ -35,6 +35,19 @@ export default function TabLayout() {
           tabBarIcon: ({ color, focused }) => (
             <TabBarIcon
               name={focused ? "notifications" : "notifications-outline"}
+              color={color}
+            />
+          ),
+        }}
+      />
+
+      <Tabs.Screen
+        name="new"
+        options={{
+          title: "New",
+          tabBarIcon: ({ color, focused }) => (
+            <TabBarIcon
+              name={focused ? "add-circle" : "add-circle-outline"}
               color={color}
             />
           ),

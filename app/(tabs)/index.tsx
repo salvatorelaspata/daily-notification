@@ -93,10 +93,10 @@ const Today: React.FC = () => {
           style={{ flex: 1 }}
           ListEmptyComponent={
             <ThemedCard>
-              <ThemedText type="title">
-                <Ionicons name="add-circle" size={48} color="black" />
-              </ThemedText>
-              <ThemedText type="subtitle">No Reminders</ThemedText>
+              <ThemedCardText type="title">
+                <Ionicons name="add-circle" size={32} color="black" />
+              </ThemedCardText>
+              <ThemedCardText type="subtitle">No Reminders</ThemedCardText>
             </ThemedCard>
           }
         />

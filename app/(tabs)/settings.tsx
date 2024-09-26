@@ -13,14 +13,13 @@ import { Collapsible } from "@/components/Collapsible";
 import { ExternalLink } from "@/components/ExternalLink";
 import { ThemedButton } from "@/components/ThemedButton";
 import { deleteAllTables } from "@/db/delete";
-import { useThemeColor } from "@/hooks/useThemeColor";
+import { useNotifications } from "@/hooks/useNotifications";
 
 export default function Settings() {
-  // const [specificDate, setSpecificDate] = useState(new Date());
+  const { schedulePushNotification, expoPushToken, channels, notification } =
+    useNotifications();
   const [specificStartTime, setSpecificStartTime] = useState(new Date());
   const [specificEndTime, setSpecificEndTime] = useState(new Date());
-
-  // const datePickerText = useThemeColor({}, "datePickerText");
 
   const [version, setVersion] = useState("");
   const db = useSQLiteContext();
@@ -110,6 +109,32 @@ export default function Settings() {
                 },
               },
             ]);
+          }}
+        />
+      </Collapsible>
+      <Collapsible title="Notification">
+        <ThemedText>Your expo push token: {expoPushToken}</ThemedText>
+        <ThemedText>{`Channels: ${JSON.stringify(
+          channels.map((c) => c.id),
+          null,
+          2
+        )}`}</ThemedText>
+        <ThemedView style={{ alignItems: "center", justifyContent: "center" }}>
+          <ThemedText>
+            Title: {notification && notification.request.content.title}{" "}
+          </ThemedText>
+          <ThemedText>
+            Body: {notification && notification.request.content.body}
+          </ThemedText>
+          <ThemedText>
+            Data:{" "}
+            {notification && JSON.stringify(notification.request.content.data)}
+          </ThemedText>
+        </ThemedView>
+        <ThemedButton
+          text="Press to schedule a notification"
+          onPress={async () => {
+            await schedulePushNotification();
           }}
         />
       </Collapsible>
