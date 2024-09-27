@@ -17,6 +17,10 @@ import { useSQLiteContext } from "expo-sqlite";
 import ThemedTextInput from "@/components/ThemedTextInput";
 import { router } from "expo-router";
 import { ThemedSafeAreaView } from "@/components/ThemedSafeAreaView";
+import { useTranslation } from "react-i18next";
+import { ThemedIcon } from "@/components/ThemedIcon";
+import { ThemedCardText } from "@/components/ThemedCardText";
+import * as Device from "expo-device";
 
 type anyOrSpecific = "any" | "specific";
 
@@ -35,15 +39,18 @@ export default function CreateReminderView() {
   const [timePreference, setTimePreference] = useState<anyOrSpecific>("any");
   const [startTime, setStartTime] = useState<Date>(new Date());
   const [endTime, setEndTime] = useState<Date>(new Date());
+
   const textColor = useThemeColor({}, "buttonText");
   const bgColor = useThemeColor({}, "buttonBg");
-
   const datePickerText = useThemeColor({}, "datePickerText");
 
   const db = useSQLiteContext();
 
+  const { t } = useTranslation();
+
+  const isTablet = Device.deviceType === Device.DeviceType.TABLET;
+
   useEffect(() => {
-    // preselect months, days and time
     setMonthPreference("any");
     setSelectedMonths([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]);
     setDayPreference("any");
@@ -83,23 +90,23 @@ export default function CreateReminderView() {
         start_time: startTime.toISOString(),
         end_time: endTime.toISOString(),
       });
-      Alert.alert("Successo", "Ricordo creato con successo");
+      Alert.alert(t("new.successTitle"), t("new.successMessage"));
       router.back();
     } catch (error) {
-      Alert.alert("Errore", (error as Error).message);
+      Alert.alert(t("new.errorTitle"), t("new.errorMessage"));
     }
   };
 
   return (
     <ThemedSafeAreaView style={styles.container}>
       <ThemedText type="title" style={styles.title}>
-        Nuovo Ricordo
+        {t("new.title")}
       </ThemedText>
 
       <ThemedScrollView style={styles.container}>
         <ThemedCard style={styles.card}>
           <ThemedSegmentedButton
-            values={["Random", "Specific"]}
+            values={[t("new.random"), t("new.specific")]}
             selectedIndex={mode}
             onChange={(event) =>
               setMode(event.nativeEvent.selectedSegmentIndex)
@@ -108,7 +115,7 @@ export default function CreateReminderView() {
 
           <ThemedTextInput
             style={{ marginTop: 16 }}
-            placeholder="Titolo del ricordo"
+            placeholder={t("new.reminderTitle")}
             value={title}
             onChangeText={setTitle}
           />
@@ -117,18 +124,15 @@ export default function CreateReminderView() {
           <>
             <ThemedCard style={styles.card}>
               <View style={styles.cardHeader}>
-                <Ionicons
-                  style={{ marginRight: 8 }}
-                  name="paper-plane"
-                  size={30}
-                  color="#000"
-                />
-                <Text>Generali</Text>
+                <ThemedIcon icon="repeat" isCard />
+                <ThemedCardText type="defaultSemiBold">
+                  {t("new.repeating")}
+                </ThemedCardText>
               </View>
               <View style={styles.container}>
-                <Text style={styles.label}>
-                  Numero di ripetizioni all'anno: {repetitions}
-                </Text>
+                <ThemedCardText style={styles.label}>
+                  {t("new.repeatingCount")}: {repetitions}
+                </ThemedCardText>
                 <ThemedSlider
                   value={repetitions}
                   onValueChange={(value) => setRepetitions(Math.round(value))}
@@ -141,24 +145,23 @@ export default function CreateReminderView() {
 
             <ThemedCard style={styles.card}>
               <View style={styles.cardHeader}>
-                <Ionicons
-                  style={{ marginRight: 8 }}
-                  name="calendar"
-                  size={30}
-                  color="#000"
-                />
-                <Text>Preferenze</Text>
+                <ThemedIcon icon="calendar" isCard />
+                <ThemedCardText type="defaultSemiBold">
+                  {t("new.preferences")}
+                </ThemedCardText>
               </View>
-              <Text style={styles.label}>Mesi</Text>
+              <ThemedCardText style={styles.label}>
+                {t("new.months")}
+              </ThemedCardText>
               <ThemedButton
                 isCard
-                text="Qualsiasi mese"
+                text={t("new.anyMonth")}
                 onPress={() => setMonthPreference("any")}
                 type={monthPreference === "any" ? "default" : "outline"}
               />
               <ThemedButton
                 isCard
-                text="Mesi specifici"
+                text={t("new.specificMonths")}
                 onPress={() => setMonthPreference("specific")}
                 type={monthPreference === "specific" ? "default" : "outline"}
               />
@@ -169,23 +172,25 @@ export default function CreateReminderView() {
                       isCard={true}
                       key={month}
                       onPress={() => toggleMonth(index)}
-                      text={month}
+                      text={t(`months.${isTablet ? "full" : "short"}.${month}`)}
                       selected={selectedMonths.includes(index)}
                       style={{ width: "20%" }}
                     />
                   ))}
                 </View>
               )}
-              <Text style={styles.label}>Giorni della settimana</Text>
+              <ThemedCardText style={styles.label}>
+                {t("new.daysOfWeek")}
+              </ThemedCardText>
               <ThemedButton
                 isCard
-                text="Qualsiasi giorno"
+                text={t("new.anyDay")}
                 onPress={() => setDayPreference("any")}
                 type={dayPreference === "any" ? "default" : "outline"}
               />
               <ThemedButton
                 isCard
-                text="Giorni specifici"
+                text={t("new.specificDays")}
                 onPress={() => setDayPreference("specific")}
                 type={dayPreference === "specific" ? "default" : "outline"}
               />
@@ -197,7 +202,9 @@ export default function CreateReminderView() {
                         isCard={true}
                         key={day}
                         onPress={() => toggleDay(index)}
-                        text={day}
+                        text={t(
+                          `daysOfWeek.${isTablet ? "full" : "short"}.${day}`
+                        )}
                         selected={selectedDays.includes(index)}
                         style={{ width: "20%" }}
                       />
@@ -205,7 +212,7 @@ export default function CreateReminderView() {
                   </View>
 
                   <ThemedCheckbox
-                    label="Giorni lavorativi"
+                    label={t("new.workingDays")}
                     checked={workingDays}
                     onPress={() => {
                       const current = !workingDays;
@@ -217,7 +224,7 @@ export default function CreateReminderView() {
                     }}
                   />
                   <ThemedCheckbox
-                    label="Fine settimana"
+                    label={t("new.weekends")}
                     checked={weekends}
                     onPress={() => {
                       const current = !weekends;
@@ -231,23 +238,27 @@ export default function CreateReminderView() {
                   />
                 </View>
               )}
-              <Text style={styles.label}>Orario</Text>
+              <ThemedCardText style={styles.label}>
+                {t("new.reminderTime")}
+              </ThemedCardText>
               <ThemedButton
                 isCard
-                text="Qualsiasi ora"
+                text={t("new.anyTime")}
                 onPress={() => setTimePreference("any")}
                 type={timePreference === "any" ? "default" : "outline"}
               />
               <ThemedButton
                 isCard
-                text="Fascia oraria specifica"
+                text={t("new.specificTime")}
                 onPress={() => setTimePreference("specific")}
                 type={timePreference === "specific" ? "default" : "outline"}
               />
               {timePreference === "specific" && (
                 <View>
                   <View style={styles.timePickerContainer}>
-                    <Text style={styles.label}>Dalle:</Text>
+                    <ThemedCardText style={styles.label}>
+                      {t("new.from")}:
+                    </ThemedCardText>
                     <DateTimePicker
                       textColor={textColor}
                       accentColor={bgColor}
@@ -259,7 +270,9 @@ export default function CreateReminderView() {
                         setStartTime(selectedTime || startTime)
                       }
                     />
-                    <Text style={styles.label}>Alle:</Text>
+                    <ThemedCardText style={styles.label}>
+                      {t("new.to")}:
+                    </ThemedCardText>
                     <DateTimePicker
                       textColor={textColor}
                       accentColor={bgColor}
@@ -277,7 +290,13 @@ export default function CreateReminderView() {
                       <ThemedChip
                         isCard={true}
                         key={moment}
-                        text={moment}
+                        text={
+                          moment === "morning"
+                            ? t("new.morning")
+                            : moment === "afternoon"
+                            ? t("new.afternoon")
+                            : t("new.evening")
+                        }
                         onPress={() => {
                           setStartTime(
                             momentOfTheDay[
@@ -309,7 +328,9 @@ export default function CreateReminderView() {
           </>
         ) : (
           <ThemedCard style={styles.card}>
-            <Text style={styles.label}>Data:</Text>
+            <ThemedCardText style={styles.label}>
+              {t("new.date")}:
+            </ThemedCardText>
             <DateTimePicker
               textColor={datePickerText}
               value={specificDate}
@@ -319,7 +340,9 @@ export default function CreateReminderView() {
                 setSpecificDate(selectedTime || specificDate);
               }}
             />
-            <Text style={styles.label}>Ora:</Text>
+            <ThemedCardText style={styles.label}>
+              {t("new.time")}:
+            </ThemedCardText>
             <DateTimePicker
               textColor={datePickerText}
               value={specificTime}
@@ -335,11 +358,10 @@ export default function CreateReminderView() {
         <ThemedCard style={styles.card}>
           {mode === 0 && (
             <ThemedText style={styles.randomNote}>
-              Il ricordo verrà programmato in un giorno casuale in base alle
-              preferenze selezionate.
+              {t("new.randomNote")}
             </ThemedText>
           )}
-          <ThemedButton isCard text="Crea Ricordo" onPress={handleCreate} />
+          <ThemedButton isCard text={t("new.save")} onPress={handleCreate} />
         </ThemedCard>
       </ThemedScrollView>
     </ThemedSafeAreaView>

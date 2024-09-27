@@ -5,6 +5,39 @@
     "noReminders": "No reminders for today",
     "recentDays": "Recent Days"
   },
+  "new": {
+    "title": "New Reminder",
+    "random": "Random",
+    "specific": "Specific",
+    "reminderTitle": "Reminder Title",
+    "repeating": "Repeating",
+    "repeatingCount": "Number of repetitions per year",
+    "preferences": "Preferences",
+    "months": "Months",
+    "anyMonth": "Any month",
+    "specificMonths": "Specific months",
+    "daysOfWeek": "Days of the week",
+    "anyDay": "Any day",
+    "specificDays": "Specific days",
+    "workingDays": "Working days",
+    "weekends": "Weekend",
+    "reminderTime": "Reminder Time",
+    "anyTime": "Any time",
+    "specificTime": "Specific time range",
+    "from": "From",
+    "to": "To",
+    "morning": "Morning",
+    "afternoon": "Afternoon",
+    "evening": "Evening",
+    "date": "Date",
+    "time": "Time",
+    "randomNote": "The reminder will be scheduled on a random day based on the selected preferences.",
+    "save": "Create Reminder",
+    "successTitle": "Success",
+    "successMessage": "Reminder created successfully",
+    "errorTitle": "Error",
+    "errorMessage": "An error occurred while creating the reminder"
+  },
   "settings": {
     "title": "Settings",
     "description": "This app help yout to manage your reminders and notifications.",
@@ -42,6 +75,56 @@
       "createdBy": "Created by",
       "sourceCode": "Source Code",
       "reportIssue": "Report an issue"
+    }
+  },
+  "months": {
+    "full": {
+      "january": "January",
+      "february": "February",
+      "march": "March",
+      "april": "April",
+      "may": "May",
+      "june": "June",
+      "july": "July",
+      "august": "August",
+      "september": "September",
+      "october": "October",
+      "november": "November",
+      "december": "December"
+    },
+    "short": {
+      "january": "Jan",
+      "february": "Feb",
+      "march": "Mar",
+      "april": "Apr",
+      "may": "May",
+      "june": "Jun",
+      "july": "Jul",
+      "august": "Aug",
+      "september": "Sep",
+      "october": "Oct",
+      "november": "Nov",
+      "december": "Dec"
+    }
+  },
+  "daysOfWeek": {
+    "full": {
+      "sunday": "Sunday",
+      "monday": "Monday",
+      "tuesday": "Tuesday",
+      "wednesday": "Wednesday",
+      "thursday": "Thursday",
+      "friday": "Friday",
+      "saturday": "Saturday"
+    },
+    "short": {
+      "sunday": "Sun",
+      "monday": "Mon",
+      "tuesday": "Tue",
+      "wednesday": "Wed",
+      "thursday": "Thu",
+      "friday": "Fri",
+      "saturday": "Sat"
     }
   }
 }

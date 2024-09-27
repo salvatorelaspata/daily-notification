@@ -5,6 +5,39 @@
     "noReminders": "Nessun promemoria per oggi",
     "recentDays": "Giorni recenti"
   },
+  "new": {
+    "title": "Nuovo promemoria",
+    "random": "Casuale",
+    "specific": "Specifico",
+    "reminderTitle": "Titolo del promemoria",
+    "repeating": "Ripetizione",
+    "repeatingCount": "Numero di ripetizioni all'anno",
+    "preferences": "Preferenze",
+    "months": "Mesi",
+    "anyMonth": "Qualsiasi mese",
+    "specificMonths": "Mesi specifici",
+    "daysOfWeek": "Giorni della settimana",
+    "anyDay": "Qualsiasi giorno",
+    "specificDays": "Giorni specifici",
+    "workingDays": "Giorni lavorativi",
+    "weekends": "Fine settimana",
+    "reminderTime": "Ora del promemoria",
+    "anyTime": "Qualsiasi ora",
+    "specificTime": "Fascia oraria specifica",
+    "from": "Dalle",
+    "to": "Alle",
+    "morning": "Mattina",
+    "afternoon": "Pomeriggio",
+    "evening": "Sera",
+    "date": "Data",
+    "time": "Ora",
+    "randomNote": "Il ricordo verrà programmato in un giorno casuale in base alle preferenze selezionate.",
+    "save": "Crea promemoria",
+    "successTitle": "Successo",
+    "successMessage": "Promemoria creato con successo",
+    "errorTitle": "Errore",
+    "errorMessage": "Si è verificato un errore durante la creazione del promemoria"
+  },
   "settings": {
     "title": "Impostazioni",
     "description": "Questa app ti aiuta a gestire i tuoi promemoria e le notifiche.",
@@ -40,6 +73,56 @@
       "createdBy": "Creato da",
       "sourceCode": "Codice sorgente",
       "reportIssue": "Segnala un problema"
+    }
+  },
+  "months": {
+    "full": {
+      "january": "Gennaio",
+      "february": "Febbraio",
+      "march": "Marzo",
+      "april": "Aprile",
+      "may": "Maggio",
+      "june": "Giugno",
+      "july": "Luglio",
+      "august": "Agosto",
+      "september": "Settembre",
+      "october": "Ottobre",
+      "november": "Novembre",
+      "december": "Dicembre"
+    },
+    "short": {
+      "january": "Gen",
+      "february": "Feb",
+      "march": "Mar",
+      "april": "Apr",
+      "may": "Mag",
+      "june": "Giu",
+      "july": "Lug",
+      "august": "Ago",
+      "september": "Set",
+      "october": "Ott",
+      "november": "Nov",
+      "december": "Dic"
+    }
+  },
+  "daysOfWeek": {
+    "full": {
+      "sunday": "Domenica",
+      "monday": "Lunedì",
+      "tuesday": "Martedì",
+      "wednesday": "Mercoledì",
+      "thursday": "Giovedì",
+      "friday": "Venerdì",
+      "saturday": "Sabato"
+    },
+    "short": {
+      "sunday": "Dom",
+      "monday": "Lun",
+      "tuesday": "Mar",
+      "wednesday": "Mer",
+      "thursday": "Gio",
+      "friday": "Ven",
+      "saturday": "Sab"
     }
   }
 }

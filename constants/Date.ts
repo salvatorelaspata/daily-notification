@@ -1,18 +1,26 @@
 export const months = [
-  "Gen",
-  "Feb",
-  "Mar",
-  "Apr",
-  "Mag",
-  "Giu",
-  "Lug",
-  "Ago",
-  "Set",
-  "Ott",
-  "Nov",
-  "Dic",
+  "january",
+  "february",
+  "march",
+  "april",
+  "may",
+  "june",
+  "july",
+  "august",
+  "september",
+  "october",
+  "november",
+  "december",
 ];
-export const days = ["Lun", "Mar", "Mer", "Gio", "Ven", "Sab", "Dom"];
+export const days = [
+  "monday",
+  "tuesday",
+  "wednesday",
+  "thursday",
+  "friday",
+  "saturday",
+  "sunday",
+];
 
 type Moment = {
   text: string;
