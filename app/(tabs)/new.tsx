@@ -290,13 +290,9 @@ export default function CreateReminderView() {
                       <ThemedChip
                         isCard={true}
                         key={moment}
-                        text={
-                          moment === "morning"
-                            ? t("new.morning")
-                            : moment === "afternoon"
-                            ? t("new.afternoon")
-                            : t("new.evening")
-                        }
+                        text={t(
+                          `moment.${isTablet ? "full" : "short"}.${moment}`
+                        )}
                         onPress={() => {
                           setStartTime(
                             momentOfTheDay[

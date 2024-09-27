@@ -26,9 +26,6 @@
     "specificTime": "Fascia oraria specifica",
     "from": "Dalle",
     "to": "Alle",
-    "morning": "Mattina",
-    "afternoon": "Pomeriggio",
-    "evening": "Sera",
     "date": "Data",
     "time": "Ora",
     "randomNote": "Il ricordo verrà programmato in un giorno casuale in base alle preferenze selezionate.",
@@ -123,6 +120,18 @@
       "thursday": "Gio",
       "friday": "Ven",
       "saturday": "Sab"
+    }
+  },
+  "moment": {
+    "full": {
+      "morning": "Mattina (06:00 - 12:00)",
+      "afternoon": "Pomeriggio (12:00 - 18:00)",
+      "evening": "Sera (18:00 - 00:00)"
+    },
+    "short": {
+      "morning": "Mattina",
+      "afternoon": "Pomeriggio",
+      "evening": "Sera"
     }
   }
 }

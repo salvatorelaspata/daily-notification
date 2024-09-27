@@ -26,9 +26,6 @@
     "specificTime": "Specific time range",
     "from": "From",
     "to": "To",
-    "morning": "Morning",
-    "afternoon": "Afternoon",
-    "evening": "Evening",
     "date": "Date",
     "time": "Time",
     "randomNote": "The reminder will be scheduled on a random day based on the selected preferences.",
@@ -125,6 +122,18 @@
       "thursday": "Thu",
       "friday": "Fri",
       "saturday": "Sat"
+    }
+  },
+  "moment": {
+    "full": {
+      "morning": "Morning (06:00 - 12:00)",
+      "afternoon": "Afternoon (12:00 - 18:00)",
+      "evening": "Evening (18:00 - 00:00)"
+    },
+    "short": {
+      "morning": "Morning",
+      "afternoon": "Afternoon",
+      "evening": "Evening"
     }
   }
 }
