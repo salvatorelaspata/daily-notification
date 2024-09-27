@@ -67,7 +67,7 @@ const Today: React.FC = () => {
     >
       <ThemedCardText type="defaultSemiBold">{item.title}</ThemedCardText>
       <ThemedCardText type="default" style={{ textAlign: "right" }}>
-        {format(item.scheduled_time, "dd-MM-yyyy HH:mm")}
+        {format(item.scheduled_date, "dd-MM-yyyy HH:mm")}
       </ThemedCardText>
     </ThemedCard>
   );
@@ -76,7 +76,7 @@ const Today: React.FC = () => {
     <ThemedCard>
       <ThemedCardText type="title">{item.title}</ThemedCardText>
       <ThemedCardText type="subtitle">
-        {format(item.scheduled_time, "HH:mm")}
+        {format(item.scheduled_date, "HH:mm")}
       </ThemedCardText>
     </ThemedCard>
   );

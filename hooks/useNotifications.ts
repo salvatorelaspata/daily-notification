@@ -6,7 +6,6 @@ import * as Notifications from "expo-notifications";
 import * as Device from "expo-device";
 import Constants from "expo-constants";
 import { Platform } from "react-native";
-import { format } from "date-fns";
 
 export const useNotifications = () => {
   const [expoPushToken, setExpoPushToken] = useState("");
@@ -49,20 +48,28 @@ export const useNotifications = () => {
     };
   }, []);
 
-  async function schedulePushNotification() {
+  interface SchedulePushNotification {
+    date: Date;
+    title: string;
+    body: string;
+    data?: { [key: string]: any };
+  }
+
+  const schedulePushNotification = async ({
+    date,
+    title,
+    body,
+    data = {},
+  }: SchedulePushNotification) => {
     const id = await Notifications.scheduleNotificationAsync({
-      content: {
-        title: "NOTIFICA DI PROVA",
-        body: format(new Date(), "dd/MM/yyyy HH:mm:ss"),
-        data: { data: "goes here", test: { test1: "more data" } },
-      },
+      content: { title, body, data },
       trigger: {
-        date: new Date(Date.now() + 1000),
+        date: date,
       },
     });
 
     console.log({ id });
-  }
+  };
 
   return { notification, expoPushToken, channels, schedulePushNotification };
 };

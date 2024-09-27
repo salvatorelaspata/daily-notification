@@ -59,7 +59,7 @@ const Notifications: React.FC = () => {
             {format(item.date, "dd-MM-yyyy")}
           </ThemedCardText>
           <ThemedCardText type="defaultSemiBold">
-            {format(item.time, "HH:mm")}
+            {format(item.time, "dd-MM-yyyy HH:mm")}
           </ThemedCardText>
         </>
       ) : (
@@ -104,10 +104,9 @@ const Notifications: React.FC = () => {
         <ThemedCardText>Scheduled:</ThemedCardText>
         {item.scheduled &&
           item.scheduled.map((s: any, index: number) => (
-            <View key={`${s.scheduled_date}${s.scheduled_time}`}>
+            <View key={`${s.scheduled_date}_${index}`}>
               <ThemedCardText>
-                {index + 1}) {format(s.scheduled_date, "dd-MM-yyyy")} -{" "}
-                {format(s.scheduled_time, "HH:mm")}
+                {index + 1}) {format(s.scheduled_date, "dd-MM-yyyy HH:mm")}
               </ThemedCardText>
             </View>
           ))}

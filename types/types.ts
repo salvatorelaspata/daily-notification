@@ -21,7 +21,6 @@ export type ScheduledNotification = {
   id?: number;
   notification_id: number;
   scheduled_date: string;
-  scheduled_time: string;
 };
 
 export type Union = Notification & ScheduledNotification;

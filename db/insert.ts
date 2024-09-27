@@ -53,30 +53,15 @@ export const createNotification = async ({
   }
 };
 
-// export const deleteNotification = async (db: SQLiteDatabase, id: number) => {
-//   const statement = await db.prepareAsync(`
-//     DELETE FROM notifications
-//     WHERE id = ?
-//   `);
-//   try {
-//     await statement.executeAsync([id]);
-//   } catch (error) {
-//     console.error("Error while deleting notification", error);
-//   } finally {
-//     await statement.finalizeAsync();
-//   }
-// };
-
-// scheduled_notifications TODO: Implementare
 export const createReminder = async (
   db: SQLiteDatabase,
   data: Partial<Notification>
 ) => {
+  if (!data.title || !data.repeat_count || !data.mode) {
+    throw new Error("Title are required");
+  }
+  const scheduled: Date[] = [];
   try {
-    if (!data.title || !data.repeat_count || !data.mode) {
-      throw new Error("Title are required");
-    }
-
     const result = await createNotification({ db, args: data });
     const id = result?.lastInsertRowId;
 
@@ -87,37 +72,39 @@ export const createReminder = async (
       end.setFullYear(end.getFullYear() + 1);
 
       const statement = await db.prepareAsync(`
-        INSERT INTO scheduled_notifications (notification_id, scheduled_date, scheduled_time)
-        VALUES (?, ?, ?)
+        INSERT INTO scheduled_notifications (notification_id, scheduled_date)
+        VALUES (?, ?)
       `);
       try {
-        for (let i = 0; i < data.repeat_count; i++) {
-          // check if the mode is specific or random (random === '0')
-          if (data.mode === "0") {
+        // check if the mode is specific or random (random === '0')
+        if (data.mode === "0") {
+          for (let i = 0; i < data.repeat_count; i++) {
             const scheduled_date = generateRandomDate(start, end, data);
-            const scheduled_time = generateRandomTime(start, end);
+            try {
+              await statement.executeAsync([id, scheduled_date.toISOString()]);
+              scheduled.push(scheduled_date);
+            } catch (error) {
+              console.error("Error while creating reminder", error);
+            }
+          }
+        } else {
+          if (!data.date || !data.time) {
+            console.error(
+              "Error while creating reminder: date and time are required"
+            );
+            return;
+          }
+          try {
+            const _date = new Date(data.date);
+            const _time = new Date(data.time);
+            _date.setHours(_time.getHours());
+            _date.setMinutes(_time.getMinutes());
+            _date.setSeconds(_time.getSeconds());
 
-            try {
-              await statement.executeAsync([
-                id,
-                scheduled_date.toISOString(),
-                scheduled_time.toISOString(),
-              ]);
-            } catch (error) {
-              console.error("Error while creating reminder", error);
-            }
-          } else {
-            if (!data.date || !data.time) {
-              console.error(
-                "Error while creating reminder: date and time are required"
-              );
-              return;
-            }
-            try {
-              await statement.executeAsync([id, data.date, data.time]);
-            } catch (error) {
-              console.error("Error while creating reminder", error);
-            }
+            await statement.executeAsync([id, _date.toISOString()]);
+            scheduled.push(_date);
+          } catch (error) {
+            console.error("Error while creating reminder", error);
           }
         }
       } finally {
@@ -129,6 +116,7 @@ export const createReminder = async (
   } catch (error) {
     throw new Error(`${error}`);
   }
+  return scheduled;
 };
 
 const generateRandomDate = (

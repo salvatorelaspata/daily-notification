@@ -49,7 +49,6 @@ export const getAllNotifications = async (db: SQLiteDatabase) => {
       if (existing !== -1) {
         accumulator[existing].scheduled.push({
           scheduled_date: currentValue.scheduled_date,
-          scheduled_time: currentValue.scheduled_time,
         });
       } else {
         accumulator.push({
@@ -57,7 +56,6 @@ export const getAllNotifications = async (db: SQLiteDatabase) => {
           scheduled: [
             {
               scheduled_date: currentValue.scheduled_date,
-              scheduled_time: currentValue.scheduled_time,
             },
           ],
         });

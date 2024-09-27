@@ -199,7 +199,12 @@ export default function Settings() {
         <ThemedButton
           text="Press to schedule a notification"
           onPress={async () => {
-            await schedulePushNotification();
+            await schedulePushNotification({
+              date: new Date(Date.now() + 1000),
+              title: "📬 Test 📬",
+              body: "test notification 🧐",
+              data: { data: "goes here" },
+            });
           }}
         />
         <ThemedButton text="list notifications" onPress={async () => {}} />

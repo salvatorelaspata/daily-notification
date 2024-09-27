@@ -21,6 +21,7 @@ import { useTranslation } from "react-i18next";
 import { ThemedIcon } from "@/components/ThemedIcon";
 import { ThemedCardText } from "@/components/ThemedCardText";
 import * as Device from "expo-device";
+import { useNotifications } from "@/hooks/useNotifications";
 
 type anyOrSpecific = "any" | "specific";
 
@@ -50,6 +51,8 @@ export default function CreateReminderView() {
 
   const isTablet = Device.deviceType === Device.DeviceType.TABLET;
 
+  const { schedulePushNotification } = useNotifications();
+
   useEffect(() => {
     setMonthPreference("any");
     setSelectedMonths([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]);
@@ -76,7 +79,7 @@ export default function CreateReminderView() {
 
   const handleCreate = async () => {
     try {
-      await createReminder(db, {
+      const scheduled = await createReminder(db, {
         title,
         mode: mode.toString(),
         date: specificDate.toISOString(),
@@ -90,6 +93,15 @@ export default function CreateReminderView() {
         start_time: startTime.toISOString(),
         end_time: endTime.toISOString(),
       });
+      scheduled &&
+        scheduled.forEach((s) => {
+          schedulePushNotification({
+            title: title,
+            body: "🎉🎉🎉",
+            date: new Date(s),
+          });
+        });
+
       Alert.alert(t("new.successTitle"), t("new.successMessage"));
       router.back();
     } catch (error) {
