@@ -1,0 +1,47 @@
+{
+  "today": {
+    "title": "Today",
+    "todaysReminder": "Today's Reminder",
+    "noReminders": "No reminders for today",
+    "recentDays": "Recent Days"
+  },
+  "settings": {
+    "title": "Settings",
+    "description": "This app help yout to manage your reminders and notifications.",
+    "technicalInfo": {
+      "title": "Technical Info",
+      "sqliteVersion": "SQLite Version",
+      "learnMore": "Learn More"
+    },
+    "generalSettings": {
+      "title": "General Settings",
+      "language": "Language",
+      "italian": "Italian",
+      "english": "English",
+      "theme": "Theme",
+      "light": "Light",
+      "dark": "Dark"
+    },
+    "timeLimit": {
+      "title": "Time Limit",
+      "description": "Set the time limit for the reminders",
+      "timeLimit": "Time Limit",
+      "minutes": "minutes"
+    },
+    "dangerZone": {
+      "title": "Danger Zone",
+      "description": "This section is for development purposes only. You can use it to delete all notifications and scheduled notifications from the database",
+      "deleteAll": "Delete All",
+      "areYouSure": "Are you sure you want to delete all notifications and scheduled notifications?",
+      "cancel": "Cancel",
+      "delete": "Delete",
+      "success": "All notifications and scheduled notifications have been deleted"
+    },
+    "about": {
+      "title": "About",
+      "createdBy": "Created by",
+      "sourceCode": "Source Code",
+      "reportIssue": "Report an issue"
+    }
+  }
+}

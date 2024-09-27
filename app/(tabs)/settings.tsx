@@ -1,5 +1,5 @@
 import Ionicons from "@expo/vector-icons/Ionicons";
-import { Alert, StyleSheet } from "react-native";
+import { Alert, StyleSheet, useColorScheme } from "react-native";
 
 // import { Collapsible } from "@/components/Collapsible";
 // import { ExternalLink } from "@/components/ExternalLink";
@@ -14,15 +14,35 @@ import { ExternalLink } from "@/components/ExternalLink";
 import { ThemedButton } from "@/components/ThemedButton";
 import { deleteAllTables } from "@/db/delete";
 import { useNotifications } from "@/hooks/useNotifications";
+import { ThemedIcon } from "@/components/ThemedIcon";
+import { ThemedChip } from "@/components/ThemedChip";
+import { useTranslation } from "react-i18next";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export default function Settings() {
   const { schedulePushNotification, expoPushToken, channels, notification } =
     useNotifications();
+
+  const { i18n, t } = useTranslation();
+  const currentLanguage = i18n.language;
+
+  const colorScheme = useColorScheme();
   const [specificStartTime, setSpecificStartTime] = useState(new Date());
   const [specificEndTime, setSpecificEndTime] = useState(new Date());
 
   const [version, setVersion] = useState("");
   const db = useSQLiteContext();
+
+  useEffect(() => {
+    const loadLanguage = async () => {
+      const savedLanguage = await AsyncStorage.getItem("language");
+
+      if (savedLanguage) {
+        i18n.changeLanguage(savedLanguage);
+      }
+    };
+    loadLanguage();
+  }, [i18n]);
 
   useEffect(() => {
     async function setup() {
@@ -37,6 +57,12 @@ export default function Settings() {
     }
     setup();
   }, []);
+
+  const changeLanguage = async (lang: string) => {
+    await AsyncStorage.setItem("language", lang);
+    i18n.changeLanguage(lang);
+  };
+
   return (
     <ParallaxScrollView
       headerBackgroundColor={{ light: "#D0D0D0", dark: "#353636" }}
@@ -45,25 +71,63 @@ export default function Settings() {
       }
     >
       <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Settings</ThemedText>
+        <ThemedText type="title">{t("settings.title")}</ThemedText>
       </ThemedView>
-      <ThemedText>
-        This app help yout to manage your reminders and notifications.
-      </ThemedText>
-      <Collapsible title="Technical info">
+      <ThemedText>{t("settings.description")} </ThemedText>
+      <Collapsible title={t("settings.technicalInfo.title")}>
         <ThemedView>
           <ThemedText>
-            SQLite version:
+            {t("settings.technicalInfo.sqliteVersion")}
             <ThemedText type="defaultSemiBold">{version}</ThemedText>
           </ThemedText>
           <ExternalLink href="https://www.sqlite.org/index.html">
-            <ThemedText type="link">Learn more</ThemedText>
+            <ThemedText type="link">
+              {t("settings.technicalInfo.learnMore")}
+            </ThemedText>
           </ExternalLink>
         </ThemedView>
       </Collapsible>
-      <Collapsible title="Time Limitations">
+      <Collapsible title={t("settings.generalSettings.title")}>
+        <ThemedText>{t("settings.generalSettings.language")} </ThemedText>
+
+        <ThemedView style={{ flexDirection: "row", flexWrap: "wrap" }}>
+          <ThemedChip
+            text={t("settings.generalSettings.italian")}
+            selected={currentLanguage === "it-IT"}
+            onPress={() => {
+              if (currentLanguage === "it-IT") return;
+              changeLanguage("it-IT");
+            }}
+          />
+          <ThemedChip
+            text={t("settings.generalSettings.english")}
+            selected={currentLanguage.startsWith("en-")}
+            onPress={() => {
+              if (currentLanguage.startsWith("en-")) return;
+              changeLanguage("en-US");
+            }}
+          />
+        </ThemedView>
+
+        <ThemedText style={{ marginTop: 8 }}>
+          {t("settings.generalSettings.theme")}
+        </ThemedText>
+        <ThemedView style={{ flexDirection: "row", flexWrap: "wrap" }}>
+          <ThemedChip
+            text={t("settings.generalSettings.light")}
+            selected={colorScheme === "light"}
+            disabled
+          />
+          <ThemedChip
+            text={t("settings.generalSettings.dark")}
+            selected={colorScheme === "dark"}
+            disabled
+          />
+        </ThemedView>
+      </Collapsible>
+      <Collapsible title={t("settings.timeLimit.title")}>
         <ThemedText>
-          You can set a specific time for the notification to be sent between:
+          {t("settings.timeLimit.description")}
           <DateTimePicker
             // textColor={datePickerText}
             value={specificStartTime}
@@ -86,29 +150,30 @@ export default function Settings() {
           />
         </ThemedText>
       </Collapsible>
-      <Collapsible title="Danger zone">
-        <ThemedText>
-          This section is for development purposes only. You can use it to
-          delete all notifications and scheduled notifications from the database
-        </ThemedText>
+      <Collapsible title={t("settings.dangerZone.title")}>
+        <ThemedText>{t("settings.dangerZone.description")}</ThemedText>
         <ThemedButton
-          text="Delete all notifications"
+          text={t("settings.dangerZone.deleteAll")}
           type="outline"
           onPress={async () => {
-            Alert.alert("Delete all notifications", "Are you sure?", [
-              {
-                text: "Cancel",
-                style: "cancel",
-              },
-              {
-                text: "Delete",
-                style: "destructive",
-                onPress: async () => {
-                  await deleteAllTables(db);
-                  Alert.alert("Notifications deleted");
+            Alert.alert(
+              t("settings.dangerZone.deleteAll"),
+              t("settings.dangerZone.areYouSure"),
+              [
+                {
+                  text: t("settings.dangerZone.cancel"),
+                  style: "cancel",
                 },
-              },
-            ]);
+                {
+                  text: t("settings.dangerZone.delete"),
+                  style: "destructive",
+                  onPress: async () => {
+                    await deleteAllTables(db);
+                    Alert.alert(t("settings.dangerZone.success"));
+                  },
+                },
+              ]
+            );
           }}
         />
       </Collapsible>
@@ -137,6 +202,35 @@ export default function Settings() {
             await schedulePushNotification();
           }}
         />
+        <ThemedButton text="list notifications" onPress={async () => {}} />
+      </Collapsible>
+      <Collapsible title={t("settings.about.title")}>
+        <ThemedView>
+          <ThemedText>{t("settings.about.createdBy")}: </ThemedText>
+          <ExternalLink
+            href="https://salvatorelaspata.net"
+            style={{ marginVertical: 8 }}
+          >
+            <ThemedIcon icon="home" />{" "}
+            <ThemedText type="link">Salvatore La Spata</ThemedText>
+          </ExternalLink>
+        </ThemedView>
+
+        <ExternalLink
+          href="https://github.com/salvatorelaspata/daily-notification"
+          style={{ marginVertical: 8 }}
+        >
+          <ThemedIcon icon="logo-github" />{" "}
+          <ThemedText type="link">{t("settings.about.sourceCode")}</ThemedText>
+        </ExternalLink>
+
+        <ExternalLink
+          href="https://github.com/salvatorelaspata/daily-notification/issues/new"
+          style={{ marginVertical: 8 }}
+        >
+          <ThemedIcon icon="logo-github" />{" "}
+          <ThemedText type="link">{t("settings.about.reportIssue")}</ThemedText>
+        </ExternalLink>
       </Collapsible>
       {/* <Collapsible title="File-based routing">
         <ThemedText>

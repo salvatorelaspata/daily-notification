@@ -14,6 +14,9 @@ import { SQLiteProvider } from "expo-sqlite";
 import { Text } from "react-native";
 import { migrateDbIfNeeded } from "@/db/schema";
 import * as Notifications from "expo-notifications";
+import { useNotifications } from "@/hooks/useNotifications";
+import "@/i18n"; // This line imports the i18n configuration
+import { GestureHandlerRootView } from "react-native-gesture-handler";
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
@@ -27,6 +30,8 @@ Notifications.setNotificationHandler({
 });
 
 export default function RootLayout() {
+  useNotifications();
+
   const colorScheme = useColorScheme();
   const [loaded] = useFonts({
     SpaceMono: require("../assets/fonts/SpaceMono-Regular.ttf"),
@@ -44,16 +49,18 @@ export default function RootLayout() {
 
   return (
     <Suspense fallback={<Text>Loading...</Text>}>
-      <SQLiteProvider databaseName="reminderDB" onInit={migrateDbIfNeeded}>
-        <ThemeProvider
-          value={colorScheme === "dark" ? DarkTheme : DefaultTheme}
-        >
-          <Stack>
-            <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-            <Stack.Screen name="+not-found" />
-          </Stack>
-        </ThemeProvider>
-      </SQLiteProvider>
+      <GestureHandlerRootView style={{ flex: 1 }}>
+        <SQLiteProvider databaseName="reminderDB" onInit={migrateDbIfNeeded}>
+          <ThemeProvider
+            value={colorScheme === "dark" ? DarkTheme : DefaultTheme}
+          >
+            <Stack>
+              <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+              <Stack.Screen name="+not-found" />
+            </Stack>
+          </ThemeProvider>
+        </SQLiteProvider>
+      </GestureHandlerRootView>
     </Suspense>
   );
 }

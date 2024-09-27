@@ -13,13 +13,19 @@ import { ThemedSafeAreaView } from "@/components/ThemedSafeAreaView";
 import { HelloWave } from "@/components/HelloWave";
 import { ThemedCard } from "@/components/ThemedCard";
 import { ThemedView } from "@/components/ThemedView";
-import { Ionicons } from "@expo/vector-icons";
 import { useIsFocused } from "@react-navigation/native";
 import { useSnapshot } from "valtio";
 import { notificationActions, notificationState } from "@/store/notification";
 import { ThemedCardText } from "@/components/ThemedCardText";
+import { useTranslation } from "react-i18next";
 
 const Today: React.FC = () => {
+  const { t } = useTranslation();
+
+  const today = t("today.title");
+  const todaysReminder = t("today.todaysReminder");
+  const recentDays = t("today.recentDays");
+  const noReminders = t("today.noReminders");
   const isFocused = useIsFocused();
   const db = useSQLiteContext();
   const { todayNotifications, recentNotifications } =
@@ -77,7 +83,7 @@ const Today: React.FC = () => {
   return (
     <ThemedSafeAreaView style={styles.container}>
       <ThemedText type="title">
-        Today
+        {today}
         <HelloWave />
       </ThemedText>
       <ThemedText type="subtitle">
@@ -85,7 +91,7 @@ const Today: React.FC = () => {
       </ThemedText>
 
       <ThemedView style={{ flex: 1, marginTop: 20 }}>
-        <ThemedText type="link">Today's Reminders </ThemedText>
+        <ThemedText type="link">{todaysReminder}</ThemedText>
         <FlatList
           data={todayNotifications}
           renderItem={renderTodayNotificationItem}
@@ -93,17 +99,17 @@ const Today: React.FC = () => {
           style={{ flex: 1 }}
           ListEmptyComponent={
             <ThemedCard>
-              <ThemedCardText type="title">
-                <Ionicons name="add-circle" size={32} color="black" />
-              </ThemedCardText>
-              <ThemedCardText type="subtitle">No Reminders</ThemedCardText>
+              <ThemedCardText type="subtitle">{noReminders}</ThemedCardText>
             </ThemedCard>
           }
         />
       </ThemedView>
       <ThemedView style={{ marginTop: 20 }}>
         <Link href={"/(tabs)/notifications" as Href<string>}>
-          <ThemedText type="link">Recent Days {`>`}</ThemedText>
+          <ThemedText type="link">
+            {recentDays}
+            {`>`}
+          </ThemedText>
         </Link>
         <FlatList
           data={recentNotifications}

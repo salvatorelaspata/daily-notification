@@ -1,0 +1,30 @@
+{
+  "cli": {
+    "version": ">= 12.5.1",
+    "appVersionSource": "remote"
+  },
+  "build": {
+    "development": {
+      "developmentClient": true,
+      "distribution": "internal"
+    },
+    "preview": {
+      "distribution": "internal"
+    },
+    "production": {
+      "autoIncrement": true
+    }
+  },
+  "submit": {
+    "production": {
+      "ios": {
+        "appleId": "salvatore.la.spata@icloud.com",
+        "ascAppId": "6723893103",
+        "appleTeamId": "XMQG77L94J",
+        "ascApiKeyPath": "./AuthKey_278355Y747.p8",
+        "ascApiKeyIssuerId": "bdf80fa9-20f6-462c-8ce4-eb8b38b0543a",
+        "ascApiKeyId": "278355Y747"
+      }
+    }
+  }
+}

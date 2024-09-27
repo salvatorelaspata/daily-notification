@@ -12,6 +12,7 @@ export type ThemedButtonProps = TouchableOpacityProps & {
   lightColor?: string;
   darkColor?: string;
   type?: "default" | "outline";
+  isCard?: boolean;
 };
 
 export function ThemedButton({
@@ -19,15 +20,16 @@ export function ThemedButton({
   lightColor,
   darkColor,
   type = "default",
+  isCard = false,
   ...rest
 }: ThemedButtonProps) {
   const bgColor = useThemeColor(
     { light: lightColor, dark: darkColor },
-    "buttonBg"
+    isCard ? "buttonBg" : "text"
   );
   const textColor = useThemeColor(
     { light: lightColor, dark: darkColor },
-    "buttonText"
+    isCard ? "buttonText" : "background"
   );
 
   return (

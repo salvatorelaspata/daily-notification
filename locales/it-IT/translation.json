@@ -1,0 +1,45 @@
+{
+  "today": {
+    "title": "Oggi",
+    "todaysReminder": "Promemoria di oggi",
+    "noReminders": "Nessun promemoria per oggi",
+    "recentDays": "Giorni recenti"
+  },
+  "settings": {
+    "title": "Impostazioni",
+    "description": "Questa app ti aiuta a gestire i tuoi promemoria e le notifiche.",
+    "technicalInfo": {
+      "title": "Informazioni tecniche",
+      "sqliteVersion": "Versione di SQLite",
+      "learnMore": "Scopri di più"
+    },
+    "generalSettings": {
+      "title": "Impostazioni generali",
+      "language": "Lingua",
+      "italian": "Italiano",
+      "english": "Inglese",
+      "theme": "Tema",
+      "light": "Chiaro",
+      "dark": "Scuro"
+    },
+    "timeLimit": {
+      "title": "Limite di tempo",
+      "description": "Imposta il limite di tempo per i promemoria"
+    },
+    "dangerZone": {
+      "title": "Zona pericolosa",
+      "description": "Questa sezione è solo per scopi di sviluppo. Puoi usarla per eliminare tutte le notifiche e le notifiche programmate dal database",
+      "deleteAll": "Elimina tutto",
+      "areYouSure": "Sei sicuro di voler eliminare tutte le notifiche e le notifiche programmate?",
+      "cancel": "Annulla",
+      "delete": "Elimina",
+      "success": "Tutte le notifiche e le notifiche programmate sono state eliminate"
+    },
+    "about": {
+      "title": "Informazioni",
+      "createdBy": "Creato da",
+      "sourceCode": "Codice sorgente",
+      "reportIssue": "Segnala un problema"
+    }
+  }
+}

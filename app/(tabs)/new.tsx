@@ -16,6 +16,7 @@ import { createReminder } from "@/db/insert";
 import { useSQLiteContext } from "expo-sqlite";
 import ThemedTextInput from "@/components/ThemedTextInput";
 import { router } from "expo-router";
+import { ThemedSafeAreaView } from "@/components/ThemedSafeAreaView";
 
 type anyOrSpecific = "any" | "specific";
 
@@ -90,242 +91,258 @@ export default function CreateReminderView() {
   };
 
   return (
-    <ThemedScrollView style={styles.container}>
+    <ThemedSafeAreaView style={styles.container}>
       <ThemedText type="title" style={styles.title}>
         Nuovo Ricordo
       </ThemedText>
-      <ThemedCard style={styles.card}>
-        <ThemedSegmentedButton
-          values={["Random", "Specific"]}
-          selectedIndex={mode}
-          onChange={(event) => setMode(event.nativeEvent.selectedSegmentIndex)}
-        />
 
-        <ThemedTextInput
-          style={{ marginTop: 16 }}
-          placeholder="Titolo del ricordo"
-          value={title}
-          onChangeText={setTitle}
-        />
-      </ThemedCard>
-      {mode === 0 ? (
-        <>
-          <ThemedCard style={styles.card}>
-            <View style={styles.cardHeader}>
-              <Ionicons
-                style={{ marginRight: 8 }}
-                name="paper-plane"
-                size={30}
-                color="#000"
-              />
-              <Text>Generali</Text>
-            </View>
-            <View style={styles.container}>
-              <Text style={styles.label}>
-                Numero di ripetizioni all'anno: {repetitions}
-              </Text>
-              <ThemedSlider
-                value={repetitions}
-                onValueChange={(value) => setRepetitions(Math.round(value))}
-                minimumValue={1}
-                maximumValue={12}
-                step={1}
-              />
-            </View>
-          </ThemedCard>
+      <ThemedScrollView style={styles.container}>
+        <ThemedCard style={styles.card}>
+          <ThemedSegmentedButton
+            values={["Random", "Specific"]}
+            selectedIndex={mode}
+            onChange={(event) =>
+              setMode(event.nativeEvent.selectedSegmentIndex)
+            }
+          />
 
-          <ThemedCard style={styles.card}>
-            <View style={styles.cardHeader}>
-              <Ionicons
-                style={{ marginRight: 8 }}
-                name="calendar"
-                size={30}
-                color="#000"
-              />
-              <Text>Preferenze</Text>
-            </View>
-            <Text style={styles.label}>Mesi</Text>
-            <ThemedButton
-              text="Qualsiasi mese"
-              onPress={() => setMonthPreference("any")}
-              type={monthPreference === "any" ? "default" : "outline"}
-            />
-            <ThemedButton
-              text="Mesi specifici"
-              onPress={() => setMonthPreference("specific")}
-              type={monthPreference === "specific" ? "default" : "outline"}
-            />
-            {monthPreference === "specific" && (
-              <View style={styles.montsContainer}>
-                {months.map((month, index) => (
-                  <ThemedChip
-                    key={month}
-                    onPress={() => toggleMonth(index)}
-                    text={month}
-                    selected={selectedMonths.includes(index)}
-                    style={{ width: "20%" }}
-                  />
-                ))}
+          <ThemedTextInput
+            style={{ marginTop: 16 }}
+            placeholder="Titolo del ricordo"
+            value={title}
+            onChangeText={setTitle}
+          />
+        </ThemedCard>
+        {mode === 0 ? (
+          <>
+            <ThemedCard style={styles.card}>
+              <View style={styles.cardHeader}>
+                <Ionicons
+                  style={{ marginRight: 8 }}
+                  name="paper-plane"
+                  size={30}
+                  color="#000"
+                />
+                <Text>Generali</Text>
               </View>
-            )}
-            <Text style={styles.label}>Giorni della settimana</Text>
-            <ThemedButton
-              text="Qualsiasi giorno"
-              onPress={() => setDayPreference("any")}
-              type={dayPreference === "any" ? "default" : "outline"}
-            />
-            <ThemedButton
-              text="Giorni specifici"
-              onPress={() => setDayPreference("specific")}
-              type={dayPreference === "specific" ? "default" : "outline"}
-            />
-            {dayPreference === "specific" && (
-              <View>
-                <View style={styles.daysContainer}>
-                  {days.map((day, index) => (
+              <View style={styles.container}>
+                <Text style={styles.label}>
+                  Numero di ripetizioni all'anno: {repetitions}
+                </Text>
+                <ThemedSlider
+                  value={repetitions}
+                  onValueChange={(value) => setRepetitions(Math.round(value))}
+                  minimumValue={1}
+                  maximumValue={12}
+                  step={1}
+                />
+              </View>
+            </ThemedCard>
+
+            <ThemedCard style={styles.card}>
+              <View style={styles.cardHeader}>
+                <Ionicons
+                  style={{ marginRight: 8 }}
+                  name="calendar"
+                  size={30}
+                  color="#000"
+                />
+                <Text>Preferenze</Text>
+              </View>
+              <Text style={styles.label}>Mesi</Text>
+              <ThemedButton
+                isCard
+                text="Qualsiasi mese"
+                onPress={() => setMonthPreference("any")}
+                type={monthPreference === "any" ? "default" : "outline"}
+              />
+              <ThemedButton
+                isCard
+                text="Mesi specifici"
+                onPress={() => setMonthPreference("specific")}
+                type={monthPreference === "specific" ? "default" : "outline"}
+              />
+              {monthPreference === "specific" && (
+                <View style={styles.montsContainer}>
+                  {months.map((month, index) => (
                     <ThemedChip
-                      key={day}
-                      onPress={() => toggleDay(index)}
-                      text={day}
-                      selected={selectedDays.includes(index)}
+                      isCard={true}
+                      key={month}
+                      onPress={() => toggleMonth(index)}
+                      text={month}
+                      selected={selectedMonths.includes(index)}
                       style={{ width: "20%" }}
                     />
                   ))}
                 </View>
+              )}
+              <Text style={styles.label}>Giorni della settimana</Text>
+              <ThemedButton
+                isCard
+                text="Qualsiasi giorno"
+                onPress={() => setDayPreference("any")}
+                type={dayPreference === "any" ? "default" : "outline"}
+              />
+              <ThemedButton
+                isCard
+                text="Giorni specifici"
+                onPress={() => setDayPreference("specific")}
+                type={dayPreference === "specific" ? "default" : "outline"}
+              />
+              {dayPreference === "specific" && (
+                <View>
+                  <View style={styles.daysContainer}>
+                    {days.map((day, index) => (
+                      <ThemedChip
+                        isCard={true}
+                        key={day}
+                        onPress={() => toggleDay(index)}
+                        text={day}
+                        selected={selectedDays.includes(index)}
+                        style={{ width: "20%" }}
+                      />
+                    ))}
+                  </View>
 
-                <ThemedCheckbox
-                  label="Giorni lavorativi"
-                  checked={workingDays}
-                  onPress={() => {
-                    const current = !workingDays;
-                    for (let i = 0; i < 5; i++) {
-                      if (current && !selectedDays.includes(i)) toggleDay(i); // select
-                      if (!current && selectedDays.includes(i)) toggleDay(i); // remove
-                    }
-                    setWorkingDays(current);
-                  }}
-                />
-                <ThemedCheckbox
-                  label="Fine settimana"
-                  checked={weekends}
-                  onPress={() => {
-                    const current = !weekends;
-
-                    for (let i = 5; i < 7; i++) {
-                      if (current && !selectedDays.includes(i)) toggleDay(i); // select
-                      if (!current && selectedDays.includes(i)) toggleDay(i); // remove
-                    }
-                    setWeekends(current);
-                  }}
-                />
-              </View>
-            )}
-            <Text style={styles.label}>Orario</Text>
-            <ThemedButton
-              text="Qualsiasi ora"
-              onPress={() => setTimePreference("any")}
-              type={timePreference === "any" ? "default" : "outline"}
-            />
-            <ThemedButton
-              text="Fascia oraria specifica"
-              onPress={() => setTimePreference("specific")}
-              type={timePreference === "specific" ? "default" : "outline"}
-            />
-            {timePreference === "specific" && (
-              <View>
-                <View style={styles.timePickerContainer}>
-                  <Text style={styles.label}>Dalle:</Text>
-                  <DateTimePicker
-                    textColor={textColor}
-                    accentColor={bgColor}
-                    value={startTime}
-                    mode="time"
-                    is24Hour={true}
-                    display="default"
-                    onChange={(event, selectedTime) =>
-                      setStartTime(selectedTime || startTime)
-                    }
+                  <ThemedCheckbox
+                    label="Giorni lavorativi"
+                    checked={workingDays}
+                    onPress={() => {
+                      const current = !workingDays;
+                      for (let i = 0; i < 5; i++) {
+                        if (current && !selectedDays.includes(i)) toggleDay(i); // select
+                        if (!current && selectedDays.includes(i)) toggleDay(i); // remove
+                      }
+                      setWorkingDays(current);
+                    }}
                   />
-                  <Text style={styles.label}>Alle:</Text>
-                  <DateTimePicker
-                    textColor={textColor}
-                    accentColor={bgColor}
-                    value={endTime}
-                    mode="time"
-                    is24Hour={true}
-                    display="default"
-                    onChange={(event, selectedTime) =>
-                      setEndTime(selectedTime || endTime)
-                    }
+                  <ThemedCheckbox
+                    label="Fine settimana"
+                    checked={weekends}
+                    onPress={() => {
+                      const current = !weekends;
+
+                      for (let i = 5; i < 7; i++) {
+                        if (current && !selectedDays.includes(i)) toggleDay(i); // select
+                        if (!current && selectedDays.includes(i)) toggleDay(i); // remove
+                      }
+                      setWeekends(current);
+                    }}
                   />
                 </View>
-                <View style={styles.momentContainer}>
-                  {Object.keys(momentOfTheDay).map((moment) => (
-                    <ThemedChip
-                      key={moment}
-                      text={moment}
-                      onPress={() => {
-                        setStartTime(
-                          momentOfTheDay[moment as keyof typeof momentOfTheDay]
-                            .start
-                        );
-                        setEndTime(
-                          momentOfTheDay[moment as keyof typeof momentOfTheDay]
-                            .end
-                        );
-                      }}
-                      selected={
-                        startTime.getHours() ===
-                          momentOfTheDay[
-                            moment as keyof typeof momentOfTheDay
-                          ].start.getHours() &&
-                        endTime.getHours() ===
-                          momentOfTheDay[
-                            moment as keyof typeof momentOfTheDay
-                          ].end.getHours()
+              )}
+              <Text style={styles.label}>Orario</Text>
+              <ThemedButton
+                isCard
+                text="Qualsiasi ora"
+                onPress={() => setTimePreference("any")}
+                type={timePreference === "any" ? "default" : "outline"}
+              />
+              <ThemedButton
+                isCard
+                text="Fascia oraria specifica"
+                onPress={() => setTimePreference("specific")}
+                type={timePreference === "specific" ? "default" : "outline"}
+              />
+              {timePreference === "specific" && (
+                <View>
+                  <View style={styles.timePickerContainer}>
+                    <Text style={styles.label}>Dalle:</Text>
+                    <DateTimePicker
+                      textColor={textColor}
+                      accentColor={bgColor}
+                      value={startTime}
+                      mode="time"
+                      is24Hour={true}
+                      display="default"
+                      onChange={(event, selectedTime) =>
+                        setStartTime(selectedTime || startTime)
                       }
                     />
-                  ))}
+                    <Text style={styles.label}>Alle:</Text>
+                    <DateTimePicker
+                      textColor={textColor}
+                      accentColor={bgColor}
+                      value={endTime}
+                      mode="time"
+                      is24Hour={true}
+                      display="default"
+                      onChange={(event, selectedTime) =>
+                        setEndTime(selectedTime || endTime)
+                      }
+                    />
+                  </View>
+                  <View style={styles.momentContainer}>
+                    {Object.keys(momentOfTheDay).map((moment) => (
+                      <ThemedChip
+                        isCard={true}
+                        key={moment}
+                        text={moment}
+                        onPress={() => {
+                          setStartTime(
+                            momentOfTheDay[
+                              moment as keyof typeof momentOfTheDay
+                            ].start
+                          );
+                          setEndTime(
+                            momentOfTheDay[
+                              moment as keyof typeof momentOfTheDay
+                            ].end
+                          );
+                        }}
+                        selected={
+                          startTime.getHours() ===
+                            momentOfTheDay[
+                              moment as keyof typeof momentOfTheDay
+                            ].start.getHours() &&
+                          endTime.getHours() ===
+                            momentOfTheDay[
+                              moment as keyof typeof momentOfTheDay
+                            ].end.getHours()
+                        }
+                      />
+                    ))}
+                  </View>
                 </View>
-              </View>
-            )}
+              )}
+            </ThemedCard>
+          </>
+        ) : (
+          <ThemedCard style={styles.card}>
+            <Text style={styles.label}>Data:</Text>
+            <DateTimePicker
+              textColor={datePickerText}
+              value={specificDate}
+              mode="date"
+              display="spinner"
+              onChange={(_, selectedTime) => {
+                setSpecificDate(selectedTime || specificDate);
+              }}
+            />
+            <Text style={styles.label}>Ora:</Text>
+            <DateTimePicker
+              textColor={datePickerText}
+              value={specificTime}
+              mode="time"
+              is24Hour={true}
+              display="spinner"
+              onChange={(_, selectedTime) => {
+                setSpecificTime(selectedTime || specificTime);
+              }}
+            />
           </ThemedCard>
-        </>
-      ) : (
-        <ThemedCard style={styles.card}>
-          <Text style={styles.label}>Data:</Text>
-          <DateTimePicker
-            textColor={datePickerText}
-            value={specificDate}
-            mode="date"
-            display="spinner"
-            onChange={(_, selectedTime) => {
-              setSpecificDate(selectedTime || specificDate);
-            }}
-          />
-          <Text style={styles.label}>Ora:</Text>
-          <DateTimePicker
-            textColor={datePickerText}
-            value={specificTime}
-            mode="time"
-            is24Hour={true}
-            display="spinner"
-            onChange={(_, selectedTime) => {
-              setSpecificTime(selectedTime || specificTime);
-            }}
-          />
-        </ThemedCard>
-      )}
-      <ThemedCard style={styles.card}>
-        {mode === 0 && (
-          <ThemedText style={styles.randomNote}>
-            Il ricordo verrà programmato in un giorno casuale in base alle
-            preferenze selezionate.
-          </ThemedText>
         )}
-        <ThemedButton text="Crea Ricordo" onPress={handleCreate} />
-      </ThemedCard>
-    </ThemedScrollView>
+        <ThemedCard style={styles.card}>
+          {mode === 0 && (
+            <ThemedText style={styles.randomNote}>
+              Il ricordo verrà programmato in un giorno casuale in base alle
+              preferenze selezionate.
+            </ThemedText>
+          )}
+          <ThemedButton isCard text="Crea Ricordo" onPress={handleCreate} />
+        </ThemedCard>
+      </ThemedScrollView>
+    </ThemedSafeAreaView>
   );
 }
 

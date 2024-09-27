@@ -13,7 +13,8 @@
       "backgroundColor": "#ffffff"
     },
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.salvatorelaspata.dailynotification"
     },
     "android": {
       "adaptiveIcon": {
@@ -26,9 +27,14 @@
       "output": "static",
       "favicon": "./assets/images/favicon.png"
     },
-    "plugins": ["expo-router", "expo-notifications", "expp-calendar"],
+    "plugins": ["expo-router", "expo-notifications", "expo-localization"],
     "experiments": {
       "typedRoutes": true
+    },
+    "extra": {
+      "eas": {
+        "projectId": "5ada0039-80ec-433f-981d-6e4948506e12"
+      }
     }
   }
 }

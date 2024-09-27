@@ -16,7 +16,6 @@ import { notificationActions, notificationState } from "@/store/notification";
 import { ThemedView } from "@/components/ThemedView";
 import { ThemedCard } from "@/components/ThemedCard";
 import { ThemedCardText } from "@/components/ThemedCardText";
-import { useThemeColor } from "@/hooks/useThemeColor";
 import { ThemedSegmentedButton } from "@/components/ThemedSegmentedButton";
 
 const Notifications: React.FC = () => {
@@ -26,12 +25,8 @@ const Notifications: React.FC = () => {
   const { setNotifications } = notificationActions;
   const [loading, setLoading] = useState(true);
 
-  const cardColor = useThemeColor({}, "cardText");
-
   useEffect(() => {
-    console.log(loading);
     async function getReminders() {
-      console.log(loading);
       setLoading(true);
       try {
         const result = await getAllNotifications(db);
@@ -39,7 +34,6 @@ const Notifications: React.FC = () => {
         if (result) {
           setNotifications(result as Union[]);
           setLoading(false);
-          console.log(loading);
         }
       } catch (error) {
         console.error("Error while getting all notifications", error);
@@ -79,7 +73,12 @@ const Notifications: React.FC = () => {
                   item.months
                     .split(",")
                     .map((m: string) => (
-                      <ThemedChip key={m} text={months[parseInt(m)]} disabled />
+                      <ThemedChip
+                        isCard={true}
+                        key={m}
+                        text={months[parseInt(m)]}
+                        disabled
+                      />
                     ))}
               </View>
             </>

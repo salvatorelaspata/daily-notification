@@ -15,6 +15,7 @@ export type ThemedChipProps = TouchableOpacityProps & {
   lightColor?: string;
   darkColor?: string;
   selected?: boolean;
+  isCard?: boolean;
 };
 
 export function ThemedChip({
@@ -23,24 +24,30 @@ export function ThemedChip({
   darkColor,
   style,
   selected = false,
+  isCard = false,
   ...rest
 }: ThemedChipProps) {
-  const bgColor = useThemeColor(
+  let bgColor = useThemeColor(
     { light: lightColor, dark: darkColor },
-    "buttonBg"
+    "background"
   );
-  const textColor = useThemeColor(
-    { light: lightColor, dark: darkColor },
-    "buttonText"
-  );
+  let textColor = useThemeColor({ light: darkColor, dark: lightColor }, "text");
+
+  if (isCard) {
+    bgColor = useThemeColor({ light: lightColor, dark: darkColor }, "card");
+    textColor = useThemeColor(
+      { light: darkColor, dark: lightColor },
+      "cardText"
+    );
+  }
 
   return (
     <TouchableOpacity
       style={[
         styles.button,
         {
-          backgroundColor: !selected ? "transparent" : bgColor,
-          borderColor: !selected ? bgColor : "transparent",
+          backgroundColor: !selected ? "transparent" : textColor,
+          borderColor: !selected ? textColor : "transparent",
           borderWidth: 1,
         },
         style,
@@ -48,7 +55,7 @@ export function ThemedChip({
       {...rest}
     >
       <Text
-        style={[styles.buttonText, { color: !selected ? bgColor : textColor }]}
+        style={[styles.buttonText, { color: !selected ? textColor : bgColor }]}
       >
         {text}
       </Text>
