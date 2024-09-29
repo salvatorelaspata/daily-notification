@@ -17,6 +17,7 @@ import * as Notifications from "expo-notifications";
 import { useNotifications } from "@/hooks/useNotifications";
 import "@/i18n"; // This line imports the i18n configuration
 import { GestureHandlerRootView } from "react-native-gesture-handler";
+import { useTranslation } from "react-i18next";
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
@@ -30,6 +31,7 @@ Notifications.setNotificationHandler({
 });
 
 export default function RootLayout() {
+  const { t } = useTranslation();
   useNotifications();
 
   const colorScheme = useColorScheme();
@@ -48,7 +50,7 @@ export default function RootLayout() {
   }
 
   return (
-    <Suspense fallback={<Text>Loading...</Text>}>
+    <Suspense fallback={<Text>{t("loading")}</Text>}>
       <GestureHandlerRootView style={{ flex: 1 }}>
         <SQLiteProvider databaseName="reminderDB" onInit={migrateDbIfNeeded}>
           <ThemeProvider

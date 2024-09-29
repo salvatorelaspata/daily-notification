@@ -1,9 +1,22 @@
 {
+  "loading": "Loading...",
+  "tab": {
+    "today": "Today",
+    "notifications": "Notifications",
+    "new": "New",
+    "calendar": "Calendar",
+    "settings": "Settings"
+  },
   "today": {
     "title": "Today",
     "todaysReminder": "Today's Reminder",
     "noReminders": "No reminders for today",
     "recentDays": "Recent Days"
+  },
+  "notifications": {
+    "title": "Notifications",
+    "noNotifications": "No notifications",
+    "scheduled": "Scheduled"
   },
   "new": {
     "title": "New Reminder",

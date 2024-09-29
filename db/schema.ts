@@ -17,7 +17,7 @@ export async function migrateDbIfNeeded(db: SQLiteDatabase) {
     try {
       // notifications
       await db.execAsync(`
-        DROP TABLE IF EXISTS notifications;
+        -- DROP TABLE IF EXISTS notifications;
         CREATE TABLE IF NOT EXISTS notifications (
           id INTEGER PRIMARY KEY AUTOINCREMENT,
           title TEXT NOT NULL,
@@ -39,7 +39,7 @@ export async function migrateDbIfNeeded(db: SQLiteDatabase) {
       `);
       // scheduled_notifications
       await db.execAsync(`
-        DROP TABLE IF EXISTS scheduled_notifications;
+        -- DROP TABLE IF EXISTS scheduled_notifications;
         CREATE TABLE IF NOT EXISTS scheduled_notifications (
           id INTEGER PRIMARY KEY AUTOINCREMENT,
           notification_id INTEGER NOT NULL,
@@ -49,7 +49,7 @@ export async function migrateDbIfNeeded(db: SQLiteDatabase) {
       `);
       // settings
       await db.execAsync(`
-        DROP TABLE IF EXISTS settings;
+        -- DROP TABLE IF EXISTS settings;
         CREATE TABLE IF NOT EXISTS settings (
           id INTEGER PRIMARY KEY AUTOINCREMENT,
           start_time TIME NOT NULL,

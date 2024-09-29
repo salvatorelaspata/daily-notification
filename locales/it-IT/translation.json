@@ -1,9 +1,22 @@
 {
+  "loading": "Caricamento...",
+  "tab": {
+    "today": "Oggi",
+    "notifications": "Notifiche",
+    "new": "Nuovo",
+    "calendar": "Calendario",
+    "settings": "Impostazioni"
+  },
   "today": {
     "title": "Oggi",
     "todaysReminder": "Promemoria di oggi",
     "noReminders": "Nessun promemoria per oggi",
     "recentDays": "Giorni recenti"
+  },
+  "notifications": {
+    "title": "Notifiche",
+    "noNotifications": "Nessuna notifica",
+    "scheduled": "Programmate"
   },
   "new": {
     "title": "Nuovo promemoria",

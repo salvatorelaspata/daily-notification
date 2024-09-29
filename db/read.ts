@@ -42,8 +42,6 @@ export const getAllNotifications = async (db: SQLiteDatabase) => {
       ON s.notification_id = n.id`
     );
 
-    // console.log(JSON.stringify(result, null, 2));
-    // group by notification id
     const grouped = result.reduce((accumulator: any[], currentValue: any) => {
       const existing = accumulator.findIndex((i) => i.id === currentValue.id);
       if (existing !== -1) {
@@ -60,9 +58,9 @@ export const getAllNotifications = async (db: SQLiteDatabase) => {
           ],
         });
       }
+
       return accumulator;
     }, []);
-    // console.log(JSON.stringify(grouped, null, 2));
     return grouped;
   } catch (error) {
     console.error("Error while getting all notifications", error);

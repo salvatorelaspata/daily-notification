@@ -4,6 +4,7 @@ import {
   TouchableOpacity,
   TouchableOpacityProps,
   ViewStyle,
+  TextStyle,
 } from "react-native";
 
 import { useThemeColor } from "@/hooks/useThemeColor";
@@ -12,6 +13,7 @@ export type ThemedChipProps = TouchableOpacityProps & {
   text: string;
   // style the chip with the light and dark color
   style?: ViewStyle;
+  styleText?: TextStyle;
   lightColor?: string;
   darkColor?: string;
   selected?: boolean;
@@ -23,6 +25,7 @@ export function ThemedChip({
   lightColor,
   darkColor,
   style,
+  styleText,
   selected = false,
   isCard = false,
   ...rest
@@ -46,8 +49,8 @@ export function ThemedChip({
       style={[
         styles.button,
         {
-          backgroundColor: !selected ? "transparent" : textColor,
-          borderColor: !selected ? textColor : "transparent",
+          backgroundColor: !selected ? bgColor : textColor,
+          borderColor: !selected ? textColor : bgColor,
           borderWidth: 1,
         },
         style,
@@ -55,7 +58,11 @@ export function ThemedChip({
       {...rest}
     >
       <Text
-        style={[styles.buttonText, { color: !selected ? textColor : bgColor }]}
+        style={[
+          styles.buttonText,
+          { color: !selected ? textColor : bgColor },
+          styleText,
+        ]}
       >
         {text}
       </Text>

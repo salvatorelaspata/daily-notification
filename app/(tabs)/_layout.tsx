@@ -4,8 +4,10 @@ import React from "react";
 import { TabBarIcon } from "@/components/navigation/TabBarIcon";
 import { Colors } from "@/constants/Colors";
 import { useColorScheme } from "@/hooks/useColorScheme";
+import { useTranslation } from "react-i18next";
 
 export default function TabLayout() {
+  const { t } = useTranslation();
   const colorScheme = useColorScheme();
 
   return (
@@ -15,11 +17,10 @@ export default function TabLayout() {
         headerShown: false,
       }}
     >
-      {/* create tabs for Notifications, AllNotifications and Calendar */}
       <Tabs.Screen
         name="index"
         options={{
-          title: "Today",
+          title: t("tab.today"),
           tabBarIcon: ({ color, focused }) => (
             <TabBarIcon
               name={focused ? "newspaper" : "newspaper"}
@@ -31,7 +32,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="notifications"
         options={{
-          title: "Notifications",
+          title: t("tab.notifications"),
           tabBarIcon: ({ color, focused }) => (
             <TabBarIcon
               name={focused ? "notifications" : "notifications-outline"}
@@ -44,7 +45,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="new"
         options={{
-          title: "New",
+          title: t("tab.new"),
           tabBarIcon: ({ color, focused }) => (
             <TabBarIcon
               name={focused ? "add-circle" : "add-circle-outline"}
@@ -57,7 +58,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="calendar"
         options={{
-          title: "Calendar",
+          title: t("tab.calendar"),
           tabBarIcon: ({ color, focused }) => (
             <TabBarIcon
               name={focused ? "calendar" : "calendar-outline"}
@@ -70,7 +71,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="settings"
         options={{
-          title: "Settings",
+          title: t("tab.settings"),
           tabBarIcon: ({ color, focused }) => (
             <TabBarIcon
               name={focused ? "settings" : "settings-outline"}

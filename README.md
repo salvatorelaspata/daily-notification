@@ -59,3 +59,8 @@ To distribute the app, you can use the following commands:
 eas submit -p ios --latest
 eas submit -p android --latest
 ```
+
+# To Do
+
+[ ] Save notification device ID
+[ ] Delete Specific scheduled notification and notification device

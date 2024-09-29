@@ -28,6 +28,9 @@ export const Colors = {
     cardText: "#000",
     cardShadow: "#000",
     datePickerText: "#000",
+    agendaCalendarBackground: "#fff",
+    agendaReservationsBackgroundColor: "#fff",
+    agendaSelectedDayBackgroundColor: "#000",
   },
   dark: {
     text: "#ECEDEE",
@@ -52,5 +55,8 @@ export const Colors = {
     cardText: "#000",
     cardShadow: "#000",
     datePickerText: "#000",
+    agendaCalendarBackground: "#fff",
+    agendaReservationsBackgroundColor: "#151718",
+    agendaSelectedDayBackgroundColor: "#000",
   },
 };
