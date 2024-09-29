@@ -19,7 +19,7 @@ export function ThemedSlider({
   darkColor,
   ...rest
 }: ThemedSliderProps) {
-  const thumbTintColor = useThemeColor({}, "thumbTint");
+  const thumbTintColor = useThemeColor({}, "sliderThumb");
   const minimumTrackTintColor = useThemeColor({}, "minimumTrackTint");
   const maximumTrackTintColor = useThemeColor({}, "maximumTrackTint");
 

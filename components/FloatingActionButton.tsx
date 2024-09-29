@@ -103,7 +103,7 @@ const FloatingActionButton: React.FC<FloatingActionButtonProps> = ({
                 actionStyle,
               ]}
             >
-              <Ionicons name={action.icon} size={24} color="#fff" />
+              <Ionicons name={action.icon} size={24} color={textColor} />
             </Animated.View>
             <Animated.View style={[styles.actionButtonWrap, actionTextStyle]}>
               <Text
@@ -129,7 +129,7 @@ const FloatingActionButton: React.FC<FloatingActionButtonProps> = ({
         <Animated.View
           style={[styles.button, { backgroundColor: bgColor }, rotation]}
         >
-          <Ionicons name="add" size={24} color="#fff" />
+          <Ionicons name="add" size={24} color={textColor} />
         </Animated.View>
       </TouchableOpacity>
     </View>
@@ -153,7 +153,6 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 2 },
     shadowRadius: 4,
     elevation: 6,
-    borderBlockColor: "red",
   },
   actionButton: {
     position: "absolute",

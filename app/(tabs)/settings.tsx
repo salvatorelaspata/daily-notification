@@ -18,45 +18,31 @@ import { ThemedIcon } from "@/components/ThemedIcon";
 import { ThemedChip } from "@/components/ThemedChip";
 import { useTranslation } from "react-i18next";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useThemeColor } from "@/hooks/useThemeColor";
 
 export default function Settings() {
-  const { schedulePushNotification, expoPushToken, channels, notification } =
-    useNotifications();
+  const { schedulePushNotification } = useNotifications();
 
   const { i18n, t } = useTranslation();
   const currentLanguage = i18n.language;
 
   const colorScheme = useColorScheme();
+  const bgColor = useThemeColor({}, "background");
+  const textColor = useThemeColor({}, "text");
+
   const [specificStartTime, setSpecificStartTime] = useState(new Date());
   const [specificEndTime, setSpecificEndTime] = useState(new Date());
 
-  const [version, setVersion] = useState("");
   const db = useSQLiteContext();
 
   useEffect(() => {
     const loadLanguage = async () => {
       const savedLanguage = await AsyncStorage.getItem("language");
 
-      if (savedLanguage) {
-        i18n.changeLanguage(savedLanguage);
-      }
+      if (savedLanguage) i18n.changeLanguage(savedLanguage);
     };
     loadLanguage();
   }, [i18n]);
-
-  useEffect(() => {
-    async function setup() {
-      try {
-        const result = await db.getFirstAsync<{ "sqlite_version()": string }>(
-          "SELECT sqlite_version()"
-        );
-        if (result) setVersion(result["sqlite_version()"]);
-      } catch (error) {
-        console.error("Error while getting SQLite version", error);
-      }
-    }
-    setup();
-  }, []);
 
   const changeLanguage = async (lang: string) => {
     await AsyncStorage.setItem("language", lang);
@@ -65,31 +51,22 @@ export default function Settings() {
 
   return (
     <ParallaxScrollView
-      headerBackgroundColor={{ light: "#D0D0D0", dark: "#353636" }}
+      headerBackgroundColor={{ light: bgColor, dark: bgColor }}
       headerImage={
-        <Ionicons size={310} name="code-slash" style={styles.headerImage} />
+        <Ionicons
+          size={310}
+          name="code-slash"
+          color={textColor}
+          style={styles.headerImage}
+        />
       }
     >
       <ThemedView style={styles.titleContainer}>
         <ThemedText type="title">{t("settings.title")}</ThemedText>
       </ThemedView>
       <ThemedText>{t("settings.description")} </ThemedText>
-      <Collapsible title={t("settings.technicalInfo.title")}>
-        <ThemedView>
-          <ThemedText>
-            {t("settings.technicalInfo.sqliteVersion")}
-            <ThemedText type="defaultSemiBold">{version}</ThemedText>
-          </ThemedText>
-          <ExternalLink href="https://www.sqlite.org/index.html">
-            <ThemedText type="link">
-              {t("settings.technicalInfo.learnMore")}
-            </ThemedText>
-          </ExternalLink>
-        </ThemedView>
-      </Collapsible>
       <Collapsible title={t("settings.generalSettings.title")}>
         <ThemedText>{t("settings.generalSettings.language")} </ThemedText>
-
         <ThemedView style={{ flexDirection: "row", flexWrap: "wrap" }}>
           <ThemedChip
             text={t("settings.generalSettings.italian")}
@@ -178,24 +155,6 @@ export default function Settings() {
         />
       </Collapsible>
       <Collapsible title="Notification">
-        <ThemedText>Your expo push token: {expoPushToken}</ThemedText>
-        <ThemedText>{`Channels: ${JSON.stringify(
-          channels.map((c) => c.id),
-          null,
-          2
-        )}`}</ThemedText>
-        <ThemedView style={{ alignItems: "center", justifyContent: "center" }}>
-          <ThemedText>
-            Title: {notification && notification.request.content.title}{" "}
-          </ThemedText>
-          <ThemedText>
-            Body: {notification && notification.request.content.body}
-          </ThemedText>
-          <ThemedText>
-            Data:{" "}
-            {notification && JSON.stringify(notification.request.content.data)}
-          </ThemedText>
-        </ThemedView>
         <ThemedButton
           text="Press to schedule a notification"
           onPress={async () => {
@@ -207,7 +166,7 @@ export default function Settings() {
             });
           }}
         />
-        <ThemedButton text="list notifications" onPress={async () => {}} />
+        <ThemedButton text="List all notifications" onPress={async () => {}} />
       </Collapsible>
       <Collapsible title={t("settings.about.title")}>
         <ThemedView>
@@ -328,7 +287,6 @@ export default function Settings() {
 
 const styles = StyleSheet.create({
   headerImage: {
-    color: "#808080",
     bottom: -90,
     left: -35,
     position: "absolute",

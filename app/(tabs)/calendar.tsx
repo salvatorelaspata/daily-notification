@@ -73,15 +73,21 @@ const Calendar: React.FC = () => {
     {},
     "agendaReservationsBackgroundColor"
   );
+  const agendaDayTextColor = useThemeColor({}, "agendaDayTextColor");
 
   return (
     <ThemedSafeAreaView style={styles.container}>
       <ThemedAgenda
         theme={{
-          // dayTextColor: "red",
+          dayTextColor: agendaDayTextColor,
           calendarBackground: agendaCalendarBackground,
           selectedDayBackgroundColor: agendaSelectedDayBackgroundColor,
           reservationsBackgroundColor: agendaReservationsBackgroundColor,
+          todayDotColor: agendaDayTextColor,
+          todayTextColor: agendaDayTextColor,
+          agendaTodayColor: agendaDayTextColor,
+          indicatorColor: agendaDayTextColor,
+          dotColor: agendaDayTextColor,
         }}
         renderItem={renderItem}
         items={items}

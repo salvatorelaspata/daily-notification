@@ -20,7 +20,7 @@ export function ThemedIcon({
   const text = useThemeColor({ light: lightColor, dark: darkColor }, "text");
   const textCard = useThemeColor(
     { light: lightColor, dark: darkColor },
-    "cardText"
+    "icon"
   );
 
   return <Ionicons name={icon} size={size} color={isCard ? textCard : text} />;

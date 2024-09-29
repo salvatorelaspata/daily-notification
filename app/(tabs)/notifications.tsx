@@ -14,7 +14,7 @@ import { useSnapshot } from "valtio";
 import { notificationActions, notificationState } from "@/store/notification";
 import { ThemedView } from "@/components/ThemedView";
 import { ThemedCard } from "@/components/ThemedCard";
-import { ThemedCardText } from "@/components/ThemedCardText";
+
 import { useTranslation } from "react-i18next";
 
 const Notifications: React.FC = () => {
@@ -45,22 +45,22 @@ const Notifications: React.FC = () => {
 
   const renderItem = ({ item }: { item: any }) => (
     <ThemedCard>
-      <ThemedCardText type="title">{item.title}</ThemedCardText>
+      <ThemedText type="title">{item.title}</ThemedText>
 
       {item.mode === "1" ? (
         <>
-          <ThemedCardText type="defaultSemiBold">
+          <ThemedText type="defaultSemiBold">
             {format(item.date, "dd-MM-yyyy")}
-          </ThemedCardText>
-          <ThemedCardText type="defaultSemiBold">
+          </ThemedText>
+          <ThemedText type="defaultSemiBold">
             {format(item.time, "dd-MM-yyyy HH:mm")}
-          </ThemedCardText>
+          </ThemedText>
         </>
       ) : (
         <>
           {item.month_preference !== "any" && (
             <>
-              <ThemedCardText>months: {item.months}</ThemedCardText>
+              <ThemedText>months: {item.months}</ThemedText>
               <View style={styles.montsContainer}>
                 {item.months &&
                   item.months
@@ -79,7 +79,7 @@ const Notifications: React.FC = () => {
         </>
       )}
       <View>
-        <ThemedCardText>{t("notifications.scheduled")}:</ThemedCardText>
+        <ThemedText>{t("notifications.scheduled")}:</ThemedText>
         {item.scheduled && (
           <View style={{ flexDirection: "row", flexWrap: "wrap" }}>
             {item.scheduled.map((s: any) => (

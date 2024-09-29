@@ -1,19 +1,20 @@
-import { Tabs } from "expo-router";
 import React from "react";
 
+import { Tabs } from "expo-router";
 import { TabBarIcon } from "@/components/navigation/TabBarIcon";
-import { Colors } from "@/constants/Colors";
-import { useColorScheme } from "@/hooks/useColorScheme";
 import { useTranslation } from "react-i18next";
+import { useThemeColor } from "@/hooks/useThemeColor";
 
 export default function TabLayout() {
   const { t } = useTranslation();
-  const colorScheme = useColorScheme();
+  const tabBarActiveTintColor = useThemeColor({}, "tabBarActiveTintColor");
+  const tabBarInactiveTintColor = useThemeColor({}, "tabBarInactiveTintColor");
 
   return (
     <Tabs
       screenOptions={{
-        tabBarActiveTintColor: Colors[colorScheme ?? "light"].tint,
+        tabBarActiveTintColor: tabBarActiveTintColor,
+        tabBarInactiveTintColor: tabBarInactiveTintColor,
         headerShown: false,
       }}
     >

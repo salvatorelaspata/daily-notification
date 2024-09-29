@@ -34,15 +34,11 @@ export function ThemedChip({
     { light: lightColor, dark: darkColor },
     "background"
   );
-  let textColor = useThemeColor({ light: darkColor, dark: lightColor }, "text");
 
-  if (isCard) {
+  if (isCard)
     bgColor = useThemeColor({ light: lightColor, dark: darkColor }, "card");
-    textColor = useThemeColor(
-      { light: darkColor, dark: lightColor },
-      "cardText"
-    );
-  }
+
+  let textColor = useThemeColor({ light: darkColor, dark: lightColor }, "text");
 
   return (
     <TouchableOpacity

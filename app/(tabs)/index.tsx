@@ -16,7 +16,7 @@ import { ThemedView } from "@/components/ThemedView";
 import { useIsFocused } from "@react-navigation/native";
 import { useSnapshot } from "valtio";
 import { notificationActions, notificationState } from "@/store/notification";
-import { ThemedCardText } from "@/components/ThemedCardText";
+
 import { useTranslation } from "react-i18next";
 
 const Today: React.FC = () => {
@@ -65,19 +65,19 @@ const Today: React.FC = () => {
         justifyContent: "space-between",
       }}
     >
-      <ThemedCardText type="defaultSemiBold">{item.title}</ThemedCardText>
-      <ThemedCardText type="default" style={{ textAlign: "right" }}>
+      <ThemedText type="defaultSemiBold">{item.title}</ThemedText>
+      <ThemedText type="default" style={{ textAlign: "right" }}>
         {format(item.scheduled_date, "dd-MM-yyyy HH:mm")}
-      </ThemedCardText>
+      </ThemedText>
     </ThemedCard>
   );
 
   const renderTodayNotificationItem = ({ item }: { item: Union }) => (
     <ThemedCard>
-      <ThemedCardText type="title">{item.title}</ThemedCardText>
-      <ThemedCardText type="subtitle">
+      <ThemedText type="title">{item.title}</ThemedText>
+      <ThemedText type="subtitle">
         {format(item.scheduled_date, "HH:mm")}
-      </ThemedCardText>
+      </ThemedText>
     </ThemedCard>
   );
   return (
@@ -99,7 +99,7 @@ const Today: React.FC = () => {
           style={{ flex: 1 }}
           ListEmptyComponent={
             <ThemedCard>
-              <ThemedCardText type="subtitle">{noReminders}</ThemedCardText>
+              <ThemedText type="subtitle">{noReminders}</ThemedText>
             </ThemedCard>
           }
         />

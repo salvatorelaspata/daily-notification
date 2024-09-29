@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Alert, StyleSheet, Text, View } from "react-native";
 import DateTimePicker from "@react-native-community/datetimepicker";
-import { Ionicons } from "@expo/vector-icons";
+
 import { ThemedText } from "@/components/ThemedText";
 import { days, momentOfTheDay, months } from "@/constants/Date";
 import { ThemedScrollView } from "@/components/ThemedScrollView";
@@ -19,7 +19,7 @@ import { router } from "expo-router";
 import { ThemedSafeAreaView } from "@/components/ThemedSafeAreaView";
 import { useTranslation } from "react-i18next";
 import { ThemedIcon } from "@/components/ThemedIcon";
-import { ThemedCardText } from "@/components/ThemedCardText";
+
 import * as Device from "expo-device";
 import { useNotifications } from "@/hooks/useNotifications";
 
@@ -137,14 +137,14 @@ export default function CreateReminderView() {
             <ThemedCard style={styles.card}>
               <View style={styles.cardHeader}>
                 <ThemedIcon icon="repeat" isCard />
-                <ThemedCardText type="defaultSemiBold">
+                <ThemedText type="defaultSemiBold">
                   {t("new.repeating")}
-                </ThemedCardText>
+                </ThemedText>
               </View>
               <View style={styles.container}>
-                <ThemedCardText style={styles.label}>
+                <ThemedText style={styles.label}>
                   {t("new.repeatingCount")}: {repetitions}
-                </ThemedCardText>
+                </ThemedText>
                 <ThemedSlider
                   value={repetitions}
                   onValueChange={(value) => setRepetitions(Math.round(value))}
@@ -158,13 +158,11 @@ export default function CreateReminderView() {
             <ThemedCard style={styles.card}>
               <View style={styles.cardHeader}>
                 <ThemedIcon icon="calendar" isCard />
-                <ThemedCardText type="defaultSemiBold">
+                <ThemedText type="defaultSemiBold">
                   {t("new.preferences")}
-                </ThemedCardText>
+                </ThemedText>
               </View>
-              <ThemedCardText style={styles.label}>
-                {t("new.months")}
-              </ThemedCardText>
+              <ThemedText style={styles.label}>{t("new.months")}</ThemedText>
               <ThemedButton
                 isCard
                 text={t("new.anyMonth")}
@@ -191,9 +189,9 @@ export default function CreateReminderView() {
                   ))}
                 </View>
               )}
-              <ThemedCardText style={styles.label}>
+              <ThemedText style={styles.label}>
                 {t("new.daysOfWeek")}
-              </ThemedCardText>
+              </ThemedText>
               <ThemedButton
                 isCard
                 text={t("new.anyDay")}
@@ -250,9 +248,9 @@ export default function CreateReminderView() {
                   />
                 </View>
               )}
-              <ThemedCardText style={styles.label}>
+              <ThemedText style={styles.label}>
                 {t("new.reminderTime")}
-              </ThemedCardText>
+              </ThemedText>
               <ThemedButton
                 isCard
                 text={t("new.anyTime")}
@@ -268,9 +266,9 @@ export default function CreateReminderView() {
               {timePreference === "specific" && (
                 <View>
                   <View style={styles.timePickerContainer}>
-                    <ThemedCardText style={styles.label}>
+                    <ThemedText style={styles.label}>
                       {t("new.from")}:
-                    </ThemedCardText>
+                    </ThemedText>
                     <DateTimePicker
                       textColor={textColor}
                       accentColor={bgColor}
@@ -282,9 +280,7 @@ export default function CreateReminderView() {
                         setStartTime(selectedTime || startTime)
                       }
                     />
-                    <ThemedCardText style={styles.label}>
-                      {t("new.to")}:
-                    </ThemedCardText>
+                    <ThemedText style={styles.label}>{t("new.to")}:</ThemedText>
                     <DateTimePicker
                       textColor={textColor}
                       accentColor={bgColor}
@@ -336,9 +332,7 @@ export default function CreateReminderView() {
           </>
         ) : (
           <ThemedCard style={styles.card}>
-            <ThemedCardText style={styles.label}>
-              {t("new.date")}:
-            </ThemedCardText>
+            <ThemedText style={styles.label}>{t("new.date")}:</ThemedText>
             <DateTimePicker
               textColor={datePickerText}
               value={specificDate}
@@ -348,9 +342,7 @@ export default function CreateReminderView() {
                 setSpecificDate(selectedTime || specificDate);
               }}
             />
-            <ThemedCardText style={styles.label}>
-              {t("new.time")}:
-            </ThemedCardText>
+            <ThemedText style={styles.label}>{t("new.time")}:</ThemedText>
             <DateTimePicker
               textColor={datePickerText}
               value={specificTime}
