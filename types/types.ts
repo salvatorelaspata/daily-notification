@@ -1,7 +1,7 @@
 export type Notification = {
   id?: number;
   title: string;
-  description: string;
+  body: string;
   repeat_count: number;
   mode: string; // 'random' o 'specific'
   date: string; // Data se 'specific'
@@ -21,6 +21,9 @@ export type ScheduledNotification = {
   id?: number;
   notification_id: number;
   scheduled_date: string;
+  created_at: string;
+  is_notified: boolean;
+  mobile_id: string;
 };
 
 export type Union = Notification & ScheduledNotification;

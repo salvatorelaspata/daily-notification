@@ -1,6 +1,5 @@
-import { Notification } from "@/types/types";
+import type { Notification } from "@/types/types";
 import { SQLiteDatabase } from "expo-sqlite";
-import { getAllNotifications } from "./read";
 
 interface CreateNotification {
   db: SQLiteDatabase;
@@ -11,7 +10,7 @@ export const createNotification = async ({
   db,
   args: {
     title,
-    description,
+    body,
     repeat_count,
     mode,
     date,
@@ -26,13 +25,13 @@ export const createNotification = async ({
   },
 }: CreateNotification) => {
   const statement = await db.prepareAsync(`
-    INSERT INTO notifications (title, description, repeat_count, mode, date, time, month_preference, months, day_preference, days_of_week, time_preference, start_time, end_time)
+    INSERT INTO notifications (title, body, repeat_count, mode, date, time, month_preference, months, day_preference, days_of_week, time_preference, start_time, end_time)
     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
   `);
   try {
     const result = await statement.executeAsync([
       title || null,
-      description || null,
+      body || null,
       repeat_count || 0,
       mode || null,
       date || null,
@@ -60,7 +59,7 @@ export const createReminder = async (
   if (!data.title || !data.repeat_count || !data.mode) {
     throw new Error("Title are required");
   }
-  const scheduled: Date[] = [];
+  const scheduled: { id: number; date: Date }[] = [];
   try {
     const result = await createNotification({ db, args: data });
     const id = result?.lastInsertRowId;
@@ -81,8 +80,12 @@ export const createReminder = async (
           for (let i = 0; i < data.repeat_count; i++) {
             const scheduled_date = generateRandomDate(start, end, data);
             try {
-              await statement.executeAsync([id, scheduled_date.toISOString()]);
-              scheduled.push(scheduled_date);
+              const res = await statement.executeAsync([
+                id,
+                scheduled_date.toISOString(),
+              ]);
+              const scheduled_id = res.lastInsertRowId;
+              scheduled.push({ id: scheduled_id, date: scheduled_date });
             } catch (error) {
               console.error("Error while creating reminder", error);
             }
@@ -101,8 +104,9 @@ export const createReminder = async (
             _date.setMinutes(_time.getMinutes());
             _date.setSeconds(_time.getSeconds());
 
-            await statement.executeAsync([id, _date.toISOString()]);
-            scheduled.push(_date);
+            const res = await statement.executeAsync([id, _date.toISOString()]);
+            const scheduled_id = res.lastInsertRowId;
+            scheduled.push({ id: scheduled_id, date: _date });
           } catch (error) {
             console.error("Error while creating reminder", error);
           }

@@ -7,6 +7,8 @@ import { useThemeColor } from "@/hooks/useThemeColor";
 
 export default function TabLayout() {
   const { t } = useTranslation();
+  const bgColor = useThemeColor({}, "background");
+  const textColor = useThemeColor({}, "text");
   const tabBarActiveTintColor = useThemeColor({}, "tabBarActiveTintColor");
   const tabBarInactiveTintColor = useThemeColor({}, "tabBarInactiveTintColor");
 
@@ -53,6 +55,12 @@ export default function TabLayout() {
               color={color}
             />
           ),
+          headerShown: true,
+          headerTitle: t("tab.new"),
+          headerStyle: {
+            backgroundColor: bgColor,
+            borderColor: textColor,
+          },
         }}
       />
 

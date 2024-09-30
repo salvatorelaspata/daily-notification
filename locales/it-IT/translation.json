@@ -23,6 +23,9 @@
     "random": "Casuale",
     "specific": "Specifico",
     "reminderTitle": "Titolo del promemoria",
+    "reminderBody": "Corpo del promemoria",
+    "continue": "Continua a create",
+    "important": "Importante",
     "repeating": "Ripetizione",
     "repeatingCount": "Numero di ripetizioni all'anno",
     "preferences": "Preferenze",
@@ -46,7 +49,8 @@
     "successTitle": "Successo",
     "successMessage": "Promemoria creato con successo",
     "errorTitle": "Errore",
-    "errorMessage": "Si è verificato un errore durante la creazione del promemoria"
+    "errorMessage": "Si è verificato un errore durante la creazione del promemoria",
+    "errorSchedule": "Si è verificato un errore durante la programmazione del promemoria"
   },
   "settings": {
     "title": "Impostazioni",

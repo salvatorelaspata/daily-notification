@@ -2,7 +2,7 @@ import React, { Suspense, useEffect, useState } from "react";
 import { View, FlatList, Text, StyleSheet, Image } from "react-native";
 
 import { format } from "date-fns";
-import type { Union } from "@/types/types";
+import type { ScheduledNotification, Union } from "@/types/types";
 import { useSQLiteContext } from "expo-sqlite";
 import { getAllNotifications } from "@/db/read";
 import { ThemedSafeAreaView } from "@/components/ThemedSafeAreaView";
@@ -16,8 +16,10 @@ import { ThemedView } from "@/components/ThemedView";
 import { ThemedCard } from "@/components/ThemedCard";
 
 import { useTranslation } from "react-i18next";
+import { useRouter } from "expo-router";
 
 const Notifications: React.FC = () => {
+  const router = useRouter();
   const isFocused = useIsFocused();
   const db = useSQLiteContext();
   const { notifications } = useSnapshot(notificationState);
@@ -45,7 +47,8 @@ const Notifications: React.FC = () => {
 
   const renderItem = ({ item }: { item: any }) => (
     <ThemedCard>
-      <ThemedText type="title">{item.title}</ThemedText>
+      <ThemedText type="subtitle">{item.title}</ThemedText>
+      <ThemedText>{item.body}</ThemedText>
 
       {item.mode === "1" ? (
         <>
@@ -79,18 +82,26 @@ const Notifications: React.FC = () => {
         </>
       )}
       <View>
-        <ThemedText>{t("notifications.scheduled")}:</ThemedText>
+        {/* <ThemedText>{t("notifications.scheduled")}:</ThemedText> */}
         {item.scheduled && (
-          <View style={{ flexDirection: "row", flexWrap: "wrap" }}>
-            {item.scheduled.map((s: any) => (
-              <View
-                style={{ position: "relative" }}
+          <View
+            style={{
+              flexDirection: "row",
+              flexWrap: "wrap",
+              justifyContent: "space-between",
+            }}
+          >
+            {item.scheduled.map((s: ScheduledNotification) => (
+              <ThemedView
+                style={{ position: "relative", backgroundColor: "transparent" }}
                 key={format(s.scheduled_date, "dd-MM-yyyy HH:mm:ss")}
               >
                 <ThemedChip
                   text={format(s.scheduled_date, "dd-MM-yy")}
                   isCard
-                  disabled
+                  onPress={() => {
+                    router.navigate("/notifications/detail");
+                  }}
                 />
                 <ThemedChip
                   text={format(s.scheduled_date, "HH:mm")}
@@ -105,7 +116,7 @@ const Notifications: React.FC = () => {
                   }}
                   styleText={{ fontSize: 12 }}
                 />
-              </View>
+              </ThemedView>
             ))}
           </View>
         )}
@@ -122,7 +133,7 @@ const Notifications: React.FC = () => {
         <ThemedChip
           text={
             notifications.length < 100
-              ? notifications.length.toString() + "0"
+              ? notifications.length.toString()
               : ":)" || "0"
           }
           disabled

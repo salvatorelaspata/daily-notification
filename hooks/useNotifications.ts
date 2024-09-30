@@ -68,7 +68,7 @@ export const useNotifications = () => {
       },
     });
 
-    console.log({ id });
+    return id;
   };
 
   return { notification, expoPushToken, channels, schedulePushNotification };

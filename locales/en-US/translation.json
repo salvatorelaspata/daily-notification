@@ -23,6 +23,9 @@
     "random": "Random",
     "specific": "Specific",
     "reminderTitle": "Reminder Title",
+    "reminderBody": "Reminder Body",
+    "continue": "Continue to create",
+    "important": "Important",
     "repeating": "Repeating",
     "repeatingCount": "Number of repetitions per year",
     "preferences": "Preferences",
@@ -46,7 +49,8 @@
     "successTitle": "Success",
     "successMessage": "Reminder created successfully",
     "errorTitle": "Error",
-    "errorMessage": "An error occurred while creating the reminder"
+    "errorMessage": "An error occurred while creating the reminder",
+    "errorSchedule": "An error occurred while scheduling the reminder"
   },
   "settings": {
     "title": "Settings",

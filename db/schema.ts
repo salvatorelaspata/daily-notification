@@ -21,7 +21,7 @@ export async function migrateDbIfNeeded(db: SQLiteDatabase) {
         CREATE TABLE IF NOT EXISTS notifications (
           id INTEGER PRIMARY KEY AUTOINCREMENT,
           title TEXT NOT NULL,
-          description TEXT,
+          body TEXT,
           repeat_count INTEGER NOT NULL,
           mode TEXT,              -- 'random' o 'specific'
           date DATE,              -- Data se 'specific'
@@ -44,6 +44,9 @@ export async function migrateDbIfNeeded(db: SQLiteDatabase) {
           id INTEGER PRIMARY KEY AUTOINCREMENT,
           notification_id INTEGER NOT NULL,
           scheduled_date DATETIME NOT NULL,
+          created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+          is_notified BOOLEAN DEFAULT FALSE,
+          mobile_id TEXT,
           FOREIGN KEY (notification_id) REFERENCES notifications(id)
         );
       `);

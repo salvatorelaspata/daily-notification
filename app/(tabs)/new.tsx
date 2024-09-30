@@ -22,24 +22,18 @@ import { ThemedIcon } from "@/components/ThemedIcon";
 
 import * as Device from "expo-device";
 import { useNotifications } from "@/hooks/useNotifications";
-
-type anyOrSpecific = "any" | "specific";
+import { updateScheduledNotification } from "@/db/update";
+import { deleteNotification } from "@/db/delete";
+import { ThemedView } from "@/components/ThemedView";
+import { useSnapshot } from "valtio";
+import { reminderActions, reminderState } from "@/store/reminder";
+import { useIsFocused } from "@react-navigation/native";
+// import FloatingActionButton from "@/components/FloatingActionButton";
 
 export default function CreateReminderView() {
-  const [title, setTitle] = useState("");
-  const [mode, setMode] = useState<number>(0); // 0 = random, 1 = specific
-  const [repetitions, setRepetitions] = useState<number>(1);
-  const [specificDate, setSpecificDate] = useState<Date>(new Date());
-  const [specificTime, setSpecificTime] = useState<Date>(new Date());
-  const [monthPreference, setMonthPreference] = useState<anyOrSpecific>("any");
-  const [selectedMonths, setSelectedMonths] = useState<number[]>([]);
-  const [dayPreference, setDayPreference] = useState<anyOrSpecific>("any");
-  const [selectedDays, setSelectedDays] = useState<number[]>([]);
-  const [workingDays, setWorkingDays] = useState<boolean>(false);
-  const [weekends, setWeekends] = useState<boolean>(false);
-  const [timePreference, setTimePreference] = useState<anyOrSpecific>("any");
-  const [startTime, setStartTime] = useState<Date>(new Date());
-  const [endTime, setEndTime] = useState<Date>(new Date());
+  const [body, setBody] = useState<string>(""); // WA: super glitch for multiline text input
+  const { reminder } = useSnapshot(reminderState);
+  const { set, reset } = reminderActions;
 
   const textColor = useThemeColor({}, "buttonText");
   const bgColor = useThemeColor({}, "buttonBg");
@@ -53,318 +47,356 @@ export default function CreateReminderView() {
 
   const { schedulePushNotification } = useNotifications();
 
+  const isFocused = useIsFocused();
   useEffect(() => {
-    setMonthPreference("any");
-    setSelectedMonths([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]);
-    setDayPreference("any");
-    setSelectedDays([0, 1, 2, 3, 4, 5, 6]);
-    setWorkingDays(true);
-    setWeekends(true);
-    setTimePreference("any");
-    setStartTime(new Date(0, 0, 0, 0, 0, 0));
-    setEndTime(new Date(0, 0, 0, 23, 59, 59));
-  }, []);
+    if (isFocused) reset();
+  }, [isFocused]);
 
   const toggleMonth = (index: number) => {
-    setSelectedMonths((prev) =>
-      prev.includes(index) ? prev.filter((m) => m !== index) : [...prev, index]
-    );
+    const current = reminder.selectedMonths.includes(index)
+      ? reminder.selectedMonths.filter((m) => m !== index)
+      : [...reminder.selectedMonths, index];
+    set.selectedMonths(current);
   };
 
   const toggleDay = (index: number) => {
-    setSelectedDays((prev) =>
-      prev.includes(index) ? prev.filter((d) => d !== index) : [...prev, index]
-    );
+    const current = reminder.selectedDays.includes(index)
+      ? reminder.selectedDays.filter((m) => m !== index)
+      : [...reminder.selectedDays, index];
+    set.selectedDays(current);
   };
 
   const handleCreate = async () => {
     try {
       const scheduled = await createReminder(db, {
-        title,
-        mode: mode.toString(),
-        date: specificDate.toISOString(),
-        time: specificTime.toISOString(),
-        repeat_count: repetitions,
-        month_preference: monthPreference,
-        months: selectedMonths.join(","),
-        day_preference: dayPreference,
-        days_of_week: selectedDays.join(","),
-        time_preference: timePreference,
-        start_time: startTime.toISOString(),
-        end_time: endTime.toISOString(),
+        title: reminder.title,
+        body: body,
+        mode: reminder.mode.toString(),
+        date: reminder.specificDate.toISOString(),
+        time: reminder.specificTime.toISOString(),
+        repeat_count: reminder.repetitions,
+        month_preference: reminder.monthPreference,
+        months: reminder.selectedMonths.join(","),
+        day_preference: reminder.dayPreference,
+        days_of_week: reminder.selectedDays.join(","),
+        time_preference: reminder.timePreference,
+        start_time: reminder.startTime.toISOString(),
+        end_time: reminder.endTime.toISOString(),
       });
-      scheduled &&
-        scheduled.forEach((s) => {
-          schedulePushNotification({
-            title: title,
-            body: "🎉🎉🎉",
-            date: new Date(s),
+      if (!scheduled) return new Error(t("new.errorMessage"));
+      for (const { id, date } of scheduled) {
+        try {
+          const mobile_id = await schedulePushNotification({
+            title: reminder.title,
+            body: reminder.body,
+            date: new Date(date),
+            data: { id },
           });
-        });
 
+          await updateScheduledNotification(db, { id, mobile_id });
+        } catch (error) {
+          await deleteNotification(db, id);
+          throw new Error(t("new.errorSchedule"));
+        }
+      }
       Alert.alert(t("new.successTitle"), t("new.successMessage"));
-      router.back();
-    } catch (error) {
-      Alert.alert(t("new.errorTitle"), t("new.errorMessage"));
+      if (!reminder.continue_) router.back();
+      else reset();
+    } catch (error: any) {
+      Alert.alert(t("new.errorTitle"), error.message);
     }
   };
 
   return (
-    <ThemedSafeAreaView style={styles.container}>
-      <ThemedText type="title" style={styles.title}>
-        {t("new.title")}
-      </ThemedText>
+    // <ThemedSafeAreaView
+    //   style={[styles.container, { backgroundColor: "green" }]}
+    // >
+    <ThemedScrollView
+      style={[styles.container, { backgroundColor: "transparent" }]}
+    >
+      <ThemedCard style={styles.card}>
+        <ThemedSegmentedButton
+          values={[t("new.random"), t("new.specific")]}
+          selectedIndex={reminder.mode}
+          onChange={(event) => set.mode(event.nativeEvent.selectedSegmentIndex)}
+        />
+        {reminder.mode === 0 && (
+          <ThemedText style={styles.randomNote}>
+            {t("new.randomNote")}
+          </ThemedText>
+        )}
 
-      <ThemedScrollView style={styles.container}>
-        <ThemedCard style={styles.card}>
-          <ThemedSegmentedButton
-            values={[t("new.random"), t("new.specific")]}
-            selectedIndex={mode}
-            onChange={(event) =>
-              setMode(event.nativeEvent.selectedSegmentIndex)
-            }
+        <ThemedTextInput
+          style={{ marginTop: 8 }}
+          placeholder={t("new.reminderTitle")}
+          value={reminder.title}
+          onChangeText={set.title}
+        />
+        <ThemedTextInput
+          multiline={true}
+          numberOfLines={4}
+          placeholder={t("new.reminderBody")}
+          value={body}
+          onChangeText={setBody}
+          style={{
+            height: 100,
+            textAlignVertical: "top",
+            alignItems: "flex-start",
+          }}
+        />
+        <ThemedView
+          style={{ flexDirection: "column", justifyContent: "flex-end" }}
+        >
+          <ThemedCheckbox
+            label={t("new.continue")}
+            checked={reminder.continue_}
+            onPress={() => set.continue(!reminder.continue_)}
           />
-
-          <ThemedTextInput
-            style={{ marginTop: 16 }}
-            placeholder={t("new.reminderTitle")}
-            value={title}
-            onChangeText={setTitle}
-          />
-        </ThemedCard>
-        {mode === 0 ? (
-          <>
-            <ThemedCard style={styles.card}>
-              <View style={styles.cardHeader}>
-                <ThemedIcon icon="repeat" isCard />
-                <ThemedText type="defaultSemiBold">
-                  {t("new.repeating")}
-                </ThemedText>
-              </View>
-              <View style={styles.container}>
-                <ThemedText style={styles.label}>
-                  {t("new.repeatingCount")}: {repetitions}
-                </ThemedText>
-                <ThemedSlider
-                  value={repetitions}
-                  onValueChange={(value) => setRepetitions(Math.round(value))}
-                  minimumValue={1}
-                  maximumValue={12}
-                  step={1}
-                />
-              </View>
-            </ThemedCard>
-
-            <ThemedCard style={styles.card}>
-              <View style={styles.cardHeader}>
-                <ThemedIcon icon="calendar" isCard />
-                <ThemedText type="defaultSemiBold">
-                  {t("new.preferences")}
-                </ThemedText>
-              </View>
-              <ThemedText style={styles.label}>{t("new.months")}</ThemedText>
-              <ThemedButton
-                isCard
-                text={t("new.anyMonth")}
-                onPress={() => setMonthPreference("any")}
-                type={monthPreference === "any" ? "default" : "outline"}
+          {/* <ThemedCheckbox label={t("new.important")} checked={true} /> */}
+        </ThemedView>
+      </ThemedCard>
+      {reminder.mode === 0 ? (
+        <>
+          <ThemedCard style={styles.card}>
+            <View style={styles.cardHeader}>
+              <ThemedIcon icon="repeat" isCard style={{ marginRight: 8 }} />
+              <ThemedText type="defaultSemiBold">
+                {t("new.repeating")}
+              </ThemedText>
+            </View>
+            <View style={styles.container}>
+              <ThemedText type="defaultSemiBold">
+                {t("new.repeatingCount")}: {reminder.repetitions}
+              </ThemedText>
+              <ThemedSlider
+                value={reminder.repetitions}
+                onValueChange={(value) => set.repetitions(Math.round(value))}
+                minimumValue={1}
+                maximumValue={12}
+                step={1}
               />
-              <ThemedButton
-                isCard
-                text={t("new.specificMonths")}
-                onPress={() => setMonthPreference("specific")}
-                type={monthPreference === "specific" ? "default" : "outline"}
-              />
-              {monthPreference === "specific" && (
-                <View style={styles.montsContainer}>
-                  {months.map((month, index) => (
+            </View>
+          </ThemedCard>
+
+          <ThemedCard style={styles.card}>
+            <View style={styles.cardHeader}>
+              <ThemedIcon icon="calendar" isCard style={{ marginRight: 8 }} />
+              <ThemedText type="defaultSemiBold">
+                {t("new.preferences")}
+              </ThemedText>
+            </View>
+            <ThemedText type="defaultSemiBold">{t("new.months")}</ThemedText>
+            <ThemedButton
+              isCard
+              text={t("new.anyMonth")}
+              onPress={() => set.monthPreference("any")}
+              type={reminder.monthPreference === "any" ? "default" : "outline"}
+            />
+            <ThemedButton
+              isCard
+              text={t("new.specificMonths")}
+              onPress={() => set.monthPreference("specific")}
+              type={
+                reminder.monthPreference === "specific" ? "default" : "outline"
+              }
+            />
+            {reminder.monthPreference === "specific" && (
+              <View style={styles.montsContainer}>
+                {months.map((month, index) => (
+                  <ThemedChip
+                    isCard={true}
+                    key={month}
+                    onPress={() => toggleMonth(index)}
+                    text={t(`months.${isTablet ? "full" : "short"}.${month}`)}
+                    selected={reminder.selectedMonths.includes(index)}
+                    style={{ width: "20%" }}
+                  />
+                ))}
+              </View>
+            )}
+            <ThemedText type="defaultSemiBold">
+              {t("new.daysOfWeek")}
+            </ThemedText>
+            <ThemedButton
+              isCard
+              text={t("new.anyDay")}
+              onPress={() => set.dayPreference("any")}
+              type={reminder.dayPreference === "any" ? "default" : "outline"}
+            />
+            <ThemedButton
+              isCard
+              text={t("new.specificDays")}
+              onPress={() => set.dayPreference("specific")}
+              type={
+                reminder.dayPreference === "specific" ? "default" : "outline"
+              }
+            />
+            {reminder.dayPreference === "specific" && (
+              <View>
+                <View style={styles.daysContainer}>
+                  {days.map((day, index) => (
                     <ThemedChip
                       isCard={true}
-                      key={month}
-                      onPress={() => toggleMonth(index)}
-                      text={t(`months.${isTablet ? "full" : "short"}.${month}`)}
-                      selected={selectedMonths.includes(index)}
+                      key={day}
+                      onPress={() => toggleDay(index)}
+                      text={t(
+                        `daysOfWeek.${isTablet ? "full" : "short"}.${day}`
+                      )}
+                      selected={reminder.selectedDays.includes(index)}
                       style={{ width: "20%" }}
                     />
                   ))}
                 </View>
-              )}
-              <ThemedText style={styles.label}>
-                {t("new.daysOfWeek")}
-              </ThemedText>
-              <ThemedButton
-                isCard
-                text={t("new.anyDay")}
-                onPress={() => setDayPreference("any")}
-                type={dayPreference === "any" ? "default" : "outline"}
-              />
-              <ThemedButton
-                isCard
-                text={t("new.specificDays")}
-                onPress={() => setDayPreference("specific")}
-                type={dayPreference === "specific" ? "default" : "outline"}
-              />
-              {dayPreference === "specific" && (
-                <View>
-                  <View style={styles.daysContainer}>
-                    {days.map((day, index) => (
-                      <ThemedChip
-                        isCard={true}
-                        key={day}
-                        onPress={() => toggleDay(index)}
-                        text={t(
-                          `daysOfWeek.${isTablet ? "full" : "short"}.${day}`
-                        )}
-                        selected={selectedDays.includes(index)}
-                        style={{ width: "20%" }}
-                      />
-                    ))}
-                  </View>
 
-                  <ThemedCheckbox
-                    label={t("new.workingDays")}
-                    checked={workingDays}
-                    onPress={() => {
-                      const current = !workingDays;
-                      for (let i = 0; i < 5; i++) {
-                        if (current && !selectedDays.includes(i)) toggleDay(i); // select
-                        if (!current && selectedDays.includes(i)) toggleDay(i); // remove
-                      }
-                      setWorkingDays(current);
-                    }}
-                  />
-                  <ThemedCheckbox
-                    label={t("new.weekends")}
-                    checked={weekends}
-                    onPress={() => {
-                      const current = !weekends;
+                <ThemedCheckbox
+                  label={t("new.workingDays")}
+                  checked={reminder.workingDays}
+                  onPress={() => {
+                    const current = !reminder.workingDays;
+                    for (let i = 0; i < 5; i++) {
+                      if (current && !reminder.selectedDays.includes(i))
+                        toggleDay(i); // select
+                      if (!current && reminder.selectedDays.includes(i))
+                        toggleDay(i); // remove
+                    }
+                    set.workingDays(current);
+                  }}
+                />
+                <ThemedCheckbox
+                  label={t("new.weekends")}
+                  checked={reminder.weekends}
+                  onPress={() => {
+                    const current = !reminder.weekends;
 
-                      for (let i = 5; i < 7; i++) {
-                        if (current && !selectedDays.includes(i)) toggleDay(i); // select
-                        if (!current && selectedDays.includes(i)) toggleDay(i); // remove
-                      }
-                      setWeekends(current);
-                    }}
-                  />
-                </View>
-              )}
-              <ThemedText style={styles.label}>
-                {t("new.reminderTime")}
-              </ThemedText>
-              <ThemedButton
-                isCard
-                text={t("new.anyTime")}
-                onPress={() => setTimePreference("any")}
-                type={timePreference === "any" ? "default" : "outline"}
-              />
-              <ThemedButton
-                isCard
-                text={t("new.specificTime")}
-                onPress={() => setTimePreference("specific")}
-                type={timePreference === "specific" ? "default" : "outline"}
-              />
-              {timePreference === "specific" && (
-                <View>
-                  <View style={styles.timePickerContainer}>
-                    <ThemedText style={styles.label}>
-                      {t("new.from")}:
-                    </ThemedText>
-                    <DateTimePicker
-                      textColor={textColor}
-                      accentColor={bgColor}
-                      value={startTime}
-                      mode="time"
-                      is24Hour={true}
-                      display="default"
-                      onChange={(event, selectedTime) =>
-                        setStartTime(selectedTime || startTime)
-                      }
-                    />
-                    <ThemedText style={styles.label}>{t("new.to")}:</ThemedText>
-                    <DateTimePicker
-                      textColor={textColor}
-                      accentColor={bgColor}
-                      value={endTime}
-                      mode="time"
-                      is24Hour={true}
-                      display="default"
-                      onChange={(event, selectedTime) =>
-                        setEndTime(selectedTime || endTime)
-                      }
-                    />
-                  </View>
-                  <View style={styles.momentContainer}>
-                    {Object.keys(momentOfTheDay).map((moment) => (
-                      <ThemedChip
-                        isCard={true}
-                        key={moment}
-                        text={t(
-                          `moment.${isTablet ? "full" : "short"}.${moment}`
-                        )}
-                        onPress={() => {
-                          setStartTime(
-                            momentOfTheDay[
-                              moment as keyof typeof momentOfTheDay
-                            ].start
-                          );
-                          setEndTime(
-                            momentOfTheDay[
-                              moment as keyof typeof momentOfTheDay
-                            ].end
-                          );
-                        }}
-                        selected={
-                          startTime.getHours() ===
-                            momentOfTheDay[
-                              moment as keyof typeof momentOfTheDay
-                            ].start.getHours() &&
-                          endTime.getHours() ===
-                            momentOfTheDay[
-                              moment as keyof typeof momentOfTheDay
-                            ].end.getHours()
-                        }
-                      />
-                    ))}
-                  </View>
-                </View>
-              )}
-            </ThemedCard>
-          </>
-        ) : (
-          <ThemedCard style={styles.card}>
-            <ThemedText style={styles.label}>{t("new.date")}:</ThemedText>
-            <DateTimePicker
-              textColor={datePickerText}
-              value={specificDate}
-              mode="date"
-              display="spinner"
-              onChange={(_, selectedTime) => {
-                setSpecificDate(selectedTime || specificDate);
-              }}
-            />
-            <ThemedText style={styles.label}>{t("new.time")}:</ThemedText>
-            <DateTimePicker
-              textColor={datePickerText}
-              value={specificTime}
-              mode="time"
-              is24Hour={true}
-              display="spinner"
-              onChange={(_, selectedTime) => {
-                setSpecificTime(selectedTime || specificTime);
-              }}
-            />
-          </ThemedCard>
-        )}
-        <ThemedCard style={styles.card}>
-          {mode === 0 && (
-            <ThemedText style={styles.randomNote}>
-              {t("new.randomNote")}
+                    for (let i = 5; i < 7; i++) {
+                      if (current && !reminder.selectedDays.includes(i))
+                        toggleDay(i); // select
+                      if (!current && reminder.selectedDays.includes(i))
+                        toggleDay(i); // remove
+                    }
+                    set.weekends(current);
+                  }}
+                />
+              </View>
+            )}
+            <ThemedText type="defaultSemiBold">
+              {t("new.reminderTime")}
             </ThemedText>
-          )}
-          <ThemedButton isCard text={t("new.save")} onPress={handleCreate} />
+            <ThemedButton
+              isCard
+              text={t("new.anyTime")}
+              onPress={() => set.timePreference("any")}
+              type={reminder.timePreference === "any" ? "default" : "outline"}
+            />
+            <ThemedButton
+              isCard
+              text={t("new.specificTime")}
+              onPress={() => set.timePreference("specific")}
+              type={
+                reminder.timePreference === "specific" ? "default" : "outline"
+              }
+            />
+            {reminder.timePreference === "specific" && (
+              <View>
+                <View style={styles.timePickerContainer}>
+                  <ThemedText type="defaultSemiBold">
+                    {t("new.from")}:
+                  </ThemedText>
+                  <DateTimePicker
+                    textColor={textColor}
+                    accentColor={bgColor}
+                    value={reminder.startTime}
+                    mode="time"
+                    is24Hour={true}
+                    display="default"
+                    onChange={(event, selectedTime) =>
+                      set.startTime(selectedTime || reminder.startTime)
+                    }
+                  />
+                  <ThemedText type="defaultSemiBold">{t("new.to")}:</ThemedText>
+                  <DateTimePicker
+                    textColor={textColor}
+                    accentColor={bgColor}
+                    value={reminder.endTime}
+                    mode="time"
+                    is24Hour={true}
+                    display="default"
+                    onChange={(event, selectedTime) =>
+                      set.endTime(selectedTime || reminder.endTime)
+                    }
+                  />
+                </View>
+                <View style={styles.momentContainer}>
+                  {Object.keys(momentOfTheDay).map((moment) => (
+                    <ThemedChip
+                      isCard={true}
+                      key={moment}
+                      text={t(
+                        `moment.${isTablet ? "full" : "short"}.${moment}`
+                      )}
+                      onPress={() => {
+                        set.startTime(
+                          momentOfTheDay[moment as keyof typeof momentOfTheDay]
+                            .start
+                        );
+                        set.endTime(
+                          momentOfTheDay[moment as keyof typeof momentOfTheDay]
+                            .end
+                        );
+                      }}
+                      selected={
+                        reminder.startTime.getHours() ===
+                          momentOfTheDay[
+                            moment as keyof typeof momentOfTheDay
+                          ].start.getHours() &&
+                        reminder.endTime.getHours() ===
+                          momentOfTheDay[
+                            moment as keyof typeof momentOfTheDay
+                          ].end.getHours()
+                      }
+                    />
+                  ))}
+                </View>
+              </View>
+            )}
+          </ThemedCard>
+        </>
+      ) : (
+        <ThemedCard style={styles.card}>
+          <ThemedText type="defaultSemiBold">{t("new.date")}:</ThemedText>
+          <DateTimePicker
+            textColor={datePickerText}
+            value={reminder.specificDate}
+            mode="date"
+            display="spinner"
+            onChange={(_, selectedTime) => {
+              set.specificDate(selectedTime || reminder.specificDate);
+            }}
+          />
+          <ThemedText type="defaultSemiBold">{t("new.time")}:</ThemedText>
+          <DateTimePicker
+            textColor={datePickerText}
+            value={reminder.specificTime}
+            mode="time"
+            is24Hour={true}
+            display="spinner"
+            onChange={(_, selectedTime) => {
+              set.specificTime(selectedTime || reminder.specificTime);
+            }}
+          />
         </ThemedCard>
-      </ThemedScrollView>
-    </ThemedSafeAreaView>
+      )}
+      <ThemedCard style={styles.card}>
+        <ThemedButton isCard text={t("new.save")} onPress={handleCreate} />
+      </ThemedCard>
+      {/* create a floating button to save */}
+    </ThemedScrollView>
+    // <ThemedButton
+    //   text={t("new.save")}
+    //   onPress={handleCreate}
+    //   style={{ position: "absolute", bottom: 16, right: 16 }}
+    // />
+    // </ThemedSafeAreaView>
   );
 }
 
@@ -374,10 +406,10 @@ const styles = StyleSheet.create({
   },
   title: {
     textAlign: "center",
-    marginVertical: 16,
+    marginVertical: 8,
   },
   card: {
-    marginHorizontal: 16,
+    marginHorizontal: 8,
   },
   cardHeader: {
     flexDirection: "row",
@@ -409,9 +441,9 @@ const styles = StyleSheet.create({
     marginTop: 16,
   },
   randomNote: {
-    textAlign: "center",
-    marginBottom: 16,
-    fontSize: 14,
+    marginTop: 8,
+    textAlign: "justify",
+    fontSize: 12,
     color: "#666",
   },
 });

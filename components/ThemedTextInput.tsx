@@ -1,12 +1,10 @@
 import React from "react";
-import { TextInput, StyleSheet } from "react-native";
-import { ThemedTextProps } from "./ThemedText";
-
-interface ThemedTextInputProps extends ThemedTextProps {
+import { TextInput, StyleSheet, TextInputProps, TextStyle } from "react-native";
+interface ThemedTextInputProps extends TextInputProps {
   placeholder: string;
   value: string;
   onChangeText: (text: string) => void;
-  style: any;
+  style?: TextStyle;
 }
 
 const ThemedTextInput: React.FC<ThemedTextInputProps> = ({
