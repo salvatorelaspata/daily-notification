@@ -51,8 +51,10 @@ export const Colors = {
 
     agendaCalendarBackground: palette.light.palette3,
     agendaReservationsBackgroundColor: palette.light.palette3,
-    agendaSelectedDayBackgroundColor: palette.light.palette4,
+    agendaSelectedDayBackgroundColor: palette.light.palette1,
     agendaDayTextColor: palette.light.palette1,
+
+    placeholderTextColor: palette.light.palette2,
   },
   dark: {
     text: palette.dark.palette1,
@@ -84,7 +86,9 @@ export const Colors = {
 
     agendaCalendarBackground: palette.dark.palette3,
     agendaReservationsBackgroundColor: palette.dark.palette3,
-    agendaSelectedDayBackgroundColor: palette.dark.palette4,
+    agendaSelectedDayBackgroundColor: palette.dark.palette1,
     agendaDayTextColor: palette.dark.palette1,
+
+    placeholderTextColor: palette.dark.palette2,
   },
 };

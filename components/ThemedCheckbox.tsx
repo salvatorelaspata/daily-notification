@@ -29,7 +29,7 @@ export function ThemedCheckbox({
   );
   const textColor = useThemeColor(
     { light: lightColor, dark: darkColor },
-    "buttonText"
+    "text"
   );
 
   return (
@@ -41,7 +41,7 @@ export function ThemedCheckbox({
           checked && { backgroundColor: bgColor },
         ]}
       />
-      <Text style={[styles.label]}>{label}</Text>
+      <Text style={[styles.label, { color: textColor }]}>{label}</Text>
     </TouchableOpacity>
   );
 }

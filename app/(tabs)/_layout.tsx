@@ -57,6 +57,9 @@ export default function TabLayout() {
           ),
           headerShown: true,
           headerTitle: t("tab.new"),
+          headerTitleStyle: {
+            color: textColor,
+          },
           headerStyle: {
             backgroundColor: bgColor,
             borderColor: textColor,

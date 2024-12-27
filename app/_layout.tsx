@@ -18,7 +18,11 @@ import { useNotifications } from "@/hooks/useNotifications";
 import "@/i18n"; // This line imports the i18n configuration
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { useTranslation } from "react-i18next";
+// import { Settings } from 'react-native-fbsdk-next';
 
+// Ask for consent first if necessary
+// Possibly only do this for iOS if no need to handle a GDPR-type flow
+// Settings.initializeSDK();
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
 

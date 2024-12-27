@@ -6,7 +6,7 @@ import type { ScheduledNotification, Union } from "@/types/types";
 import { useSQLiteContext } from "expo-sqlite";
 import { getAllNotifications } from "@/db/read";
 import { ThemedSafeAreaView } from "@/components/ThemedSafeAreaView";
-import { useIsFocused } from "@react-navigation/native";
+// import { useIsFocused } from "@react-navigation/native";
 import { ThemedText } from "@/components/ThemedText";
 import { ThemedChip } from "@/components/ThemedChip";
 import { months } from "@/constants/Date";
@@ -20,7 +20,7 @@ import { useRouter } from "expo-router";
 
 const Notifications: React.FC = () => {
   const router = useRouter();
-  const isFocused = useIsFocused();
+  // const isFocused = useIsFocused();
   const db = useSQLiteContext();
   const { notifications } = useSnapshot(notificationState);
   const { setNotifications } = notificationActions;
@@ -42,8 +42,10 @@ const Notifications: React.FC = () => {
         console.error("Error while getting all notifications", error);
       }
     }
-    if (isFocused) getReminders();
-  }, [isFocused]);
+    getReminders();
+    //   if (isFocused) getReminders();
+    // }, [isFocused]);
+  }, []);
 
   const renderItem = ({ item }: { item: any }) => (
     <ThemedCard>

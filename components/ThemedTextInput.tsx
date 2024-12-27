@@ -1,3 +1,4 @@
+import { useThemeColor } from "@/hooks/useThemeColor";
 import React from "react";
 import { TextInput, StyleSheet, TextInputProps, TextStyle } from "react-native";
 interface ThemedTextInputProps extends TextInputProps {
@@ -14,9 +15,16 @@ const ThemedTextInput: React.FC<ThemedTextInputProps> = ({
   style,
   ...rest
 }) => {
+  const placeholderTextcolor = useThemeColor({}, "placeholderTextColor");
+  const textColor = useThemeColor({}, "text");
   return (
     <TextInput
-      style={[styles.input, style]}
+      placeholderTextColor={placeholderTextcolor}
+      style={[
+        styles.input,
+        { color: textColor, borderColor: textColor },
+        style,
+      ]}
       placeholder={placeholder}
       value={value}
       onChangeText={onChangeText}

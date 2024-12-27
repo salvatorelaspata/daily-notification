@@ -37,7 +37,7 @@ export function ThemedSegmentedButton({
       }}
       style={[
         !defaultColor && {
-          borderColor: segmentedBorder,
+          // borderColor: segmentedBorder,
           shadowColor: segmentedSelect,
           borderWidth: 1,
         },

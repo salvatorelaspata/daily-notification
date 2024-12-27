@@ -13,7 +13,7 @@ import { ThemedSafeAreaView } from "@/components/ThemedSafeAreaView";
 import { HelloWave } from "@/components/HelloWave";
 import { ThemedCard } from "@/components/ThemedCard";
 import { ThemedView } from "@/components/ThemedView";
-import { useIsFocused } from "@react-navigation/native";
+// import { useIsFocused } from "@react-navigation/native";
 import { useSnapshot } from "valtio";
 import { notificationActions, notificationState } from "@/store/notification";
 
@@ -26,7 +26,7 @@ const Today: React.FC = () => {
   const todaysReminder = t("today.todaysReminder");
   const recentDays = t("today.recentDays");
   const noReminders = t("today.noReminders");
-  const isFocused = useIsFocused();
+  // const isFocused = useIsFocused();
   const db = useSQLiteContext();
   const { todayNotifications, recentNotifications } =
     useSnapshot(notificationState);
@@ -52,8 +52,10 @@ const Today: React.FC = () => {
         setTodayNotifications([]);
       }
     }
-    if (isFocused) getReminders();
-  }, [isFocused]);
+    getReminders();
+    //   if (isFocused) getReminders();
+    // }, [isFocused]);
+  }, []);
 
   const renderRecentDays = ({ item }: { item: any }) => (
     <ThemedCard
