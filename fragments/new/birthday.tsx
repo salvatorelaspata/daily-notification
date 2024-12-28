@@ -1,84 +1,65 @@
 import { ThemedCard } from "@/components/ThemedCard";
 import { ThemedText } from "@/components/ThemedText";
-import { useEffect, useState } from "react";
+
 import { FlatList, StyleSheet } from "react-native";
-import * as Contacts from "expo-contacts";
+
 import { formatDate } from "date-fns";
 import { ThemedChip } from "@/components/ThemedChip";
 import { ThemedView } from "@/components/ThemedView";
 import { Collapsible } from "@/components/Collapsible";
-import { ThemedScrollView } from "@/components/ThemedScrollView";
-import { Settings } from "react-native-fbsdk-next";
+import useContactBirthdays from "@/hooks/useContacts";
+import { Contact } from "expo-contacts";
 
-// Ask for consent first if necessary
-// Possibly only do this for iOS if no need to handle a GDPR-type flow
-// Settings.setAppID("");
-// import { AccessToken, LoginButton } from "react-native-fbsdk-next";
+const BirthdayItem = ({
+  name,
+  birthday,
+}: {
+  name: Contact["name"];
+  birthday: Contact["birthday"];
+}) => (
+  <ThemedView
+    style={{
+      flexDirection: "row",
+      justifyContent: "space-between",
+    }}
+  >
+    <ThemedText>{name}</ThemedText>
+    <ThemedChip
+      text={formatDate(
+        new Date(birthday?.year ?? 0, birthday?.month ?? 0, birthday?.day),
+        "dd-MM-yyyy"
+      )}
+    />
+  </ThemedView>
+);
 
 export const BirtdayFragment = () => {
-  const [data, setData] = useState<Contacts.Contact[]>([]);
-  useEffect(() => {
-    (async () => {
-      const { status } = await Contacts.requestPermissionsAsync();
-      // console.log(status);
-      if (status === "granted") {
-        const { data } = await Contacts.getContactsAsync({
-          sort: Contacts.SortTypes.LastName,
-          fields: [Contacts.Fields.Emails, Contacts.Fields.Birthday],
-        });
-
-        const birthdayContacts = data.filter((contact) => contact.birthday);
-        if (data.length > 0) {
-          setData(birthdayContacts);
-        }
-      }
-    })();
-  }, []);
+  const { birthdays, error } = useContactBirthdays();
 
   return (
     <ThemedCard style={styles.card}>
       {/* show all contact in flatlist */}
       <Collapsible title="Phone Birthday">
-        <ThemedScrollView style={{ maxHeight: 200 }}>
-          {data.map(({ id, name, birthday }) => (
-            <ThemedView
-              key={id}
-              style={{
-                flexDirection: "row",
-                justifyContent: "space-between",
-              }}
-            >
-              <ThemedText>{name}</ThemedText>
-              <ThemedChip
-                text={formatDate(
-                  new Date(
-                    birthday?.year ?? 0,
-                    birthday?.month ?? 0,
-                    birthday?.day
-                  ),
-                  "dd-MM-yyyy"
-                )}
-              />
-            </ThemedView>
+        <ThemedView style={{ maxHeight: 140 }}>
+          {error && <ThemedText>{error}</ThemedText>}
+          {/* <FlatList
+            data={birthdays}
+            keyExtractor={(item) => item.id ?? item.name}
+            renderItem={({ item }) => (
+              <BirthdayItem name={item.name} birthday={item.birthday} />
+            )}
+            ListEmptyComponent={<ThemedText>No birthday contacts</ThemedText>}
+          /> */}
+          {birthdays.map((contact) => (
+            <BirthdayItem
+              key={contact.id ?? contact.name}
+              name={contact.name}
+              birthday={contact.birthday}
+            />
           ))}
-        </ThemedScrollView>
+        </ThemedView>
       </Collapsible>
-      <Collapsible title="Facebook Birthday">
-        {/* <LoginButton
-          onLoginFinished={(error, result) => {
-            if (error) {
-              console.log("login has error: " + result.error);
-            } else if (result.isCancelled) {
-              console.log("login is cancelled.");
-            } else {
-              AccessToken.getCurrentAccessToken().then((data) => {
-                console.log(data.accessToken.toString());
-              });
-            }
-          }}
-          onLogoutFinished={() => console.log("logout.")}
-        /> */}
-      </Collapsible>
+      <Collapsible title="Facebook Birthday"></Collapsible>
     </ThemedCard>
   );
 };

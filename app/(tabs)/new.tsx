@@ -83,63 +83,62 @@ export default function CreateReminderView() {
   };
 
   return (
-    <ThemedScrollView
-      style={[styles.container, { backgroundColor: "transparent" }]}
-    >
+    <ThemedView style={[styles.container, { backgroundColor: "transparent" }]}>
       <ThemedCard style={styles.card}>
         <ThemedSegmentedButton
           values={[t("new.random"), t("new.specific"), t("new.birthday")]}
           selectedIndex={reminder.mode}
           onChange={(event) => set.mode(event.nativeEvent.selectedSegmentIndex)}
         />
-        {reminder.mode === 0 && (
-          <ThemedText style={styles.randomNote}>
-            {t("new.randomNote")}
-          </ThemedText>
-        )}
       </ThemedCard>
-      <ThemedCard style={styles.card}>
-        <ThemedTextInput
-          style={{ marginTop: 8 }}
-          placeholder={t("new.reminderTitle")}
-          value={reminder.title}
-          onChangeText={set.title}
-        />
-        <ThemedTextInput
-          multiline={true}
-          numberOfLines={4}
-          placeholder={t("new.reminderBody")}
-          value={body} // WA reminder.body
-          onChangeText={setBody} // WA set.body
-          style={{
-            height: 100,
-            textAlignVertical: "top",
-            alignItems: "flex-start",
-          }}
-        />
-      </ThemedCard>
-      {reminder.mode === 0 ? (
-        <RandomFragment />
-      ) : reminder.mode === 1 ? (
-        <SpecificFragment />
-      ) : (
-        <BirtdayFragment />
-      )}
-      <ThemedCard style={styles.card}>
-        <ThemedButton isCard text={t("new.save")} onPress={handleCreate} />
-
-        <ThemedView
-          style={{ flexDirection: "column", justifyContent: "flex-end" }}
-        >
-          <ThemedCheckbox
-            label={t("new.continue")}
-            checked={reminder.continue_}
-            onPress={() => set.continue(!reminder.continue_)}
+      <ThemedScrollView>
+        <ThemedCard style={styles.card}>
+          <ThemedTextInput
+            style={{ marginTop: 8 }}
+            placeholder={t("new.reminderTitle")}
+            value={reminder.title}
+            onChangeText={set.title}
           />
-        </ThemedView>
-      </ThemedCard>
+          <ThemedTextInput
+            multiline={true}
+            numberOfLines={4}
+            placeholder={t("new.reminderBody")}
+            value={body} // WA reminder.body
+            onChangeText={setBody} // WA set.body
+            style={{
+              height: 100,
+              textAlignVertical: "top",
+              alignItems: "flex-start",
+            }}
+          />
+        </ThemedCard>
+        {reminder.mode === 0 ? (
+          <RandomFragment />
+        ) : reminder.mode === 1 ? (
+          <SpecificFragment />
+        ) : (
+          <BirtdayFragment />
+        )}
+        <ThemedCard style={styles.card}>
+          <ThemedButton isCard text={t("new.save")} onPress={handleCreate} />
+          {reminder.mode === 0 && (
+            <ThemedText style={styles.randomNote}>
+              {t("new.randomNote")}
+            </ThemedText>
+          )}
+          <ThemedView
+            style={{ flexDirection: "column", justifyContent: "flex-end" }}
+          >
+            <ThemedCheckbox
+              label={t("new.continue")}
+              checked={reminder.continue_}
+              onPress={() => set.continue(!reminder.continue_)}
+            />
+          </ThemedView>
+        </ThemedCard>
+      </ThemedScrollView>
       {/* create a floating button to save */}
-    </ThemedScrollView>
+    </ThemedView>
   );
 }
 
