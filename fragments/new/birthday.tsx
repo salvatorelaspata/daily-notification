@@ -1,7 +1,7 @@
 import { ThemedCard } from "@/components/ThemedCard";
 import { ThemedText } from "@/components/ThemedText";
 
-import { FlatList, StyleSheet } from "react-native";
+import { StyleSheet } from "react-native";
 
 import { formatDate } from "date-fns";
 import { ThemedChip } from "@/components/ThemedChip";
@@ -9,6 +9,8 @@ import { ThemedView } from "@/components/ThemedView";
 import { Collapsible } from "@/components/Collapsible";
 import useContactBirthdays from "@/hooks/useContacts";
 import { Contact } from "expo-contacts";
+import { ThemedScrollView } from "@/components/ThemedScrollView";
+import FacebookFriendsList from "@/components/FacebookFriendsList";
 
 const BirthdayItem = ({
   name,
@@ -40,7 +42,7 @@ export const BirtdayFragment = () => {
     <ThemedCard style={styles.card}>
       {/* show all contact in flatlist */}
       <Collapsible title="Phone Birthday">
-        <ThemedView style={{ maxHeight: 140 }}>
+        <ThemedScrollView style={{ maxHeight: 140 }}>
           {error && <ThemedText>{error}</ThemedText>}
           {/* <FlatList
             data={birthdays}
@@ -57,9 +59,13 @@ export const BirtdayFragment = () => {
               birthday={contact.birthday}
             />
           ))}
-        </ThemedView>
+        </ThemedScrollView>
       </Collapsible>
-      <Collapsible title="Facebook Birthday"></Collapsible>
+      <Collapsible title="Facebook Birthday">
+        {/* <FacebookLoginButton /> */}
+        <ThemedText>Facebook friends with birthdays</ThemedText>
+        <FacebookFriendsList />
+      </Collapsible>
     </ThemedCard>
   );
 };

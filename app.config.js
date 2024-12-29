@@ -1,29 +1,43 @@
 const IS_DEV = process.env.APP_VARIANT === "development";
+const IS_PREVIEW = process.env.APP_VARIANT === "preview";
+
+const getUniqueIdentifier = () => {
+  if (IS_DEV) return "com.salvatorelaspata.dailynotification.dev";
+  if (IS_PREVIEW) return "com.salvatorelaspata.dailynotification.preview";
+  return "com.salvatorelaspata.dailynotification";
+};
+
+const getAppName = () => {
+  if (IS_DEV) return "(Dev) Daily Notification";
+  if (IS_PREVIEW) return "(Preview) Daily Notification";
+  return "Daily Notification";
+};
+
+const getAssetPath = (path) => {
+  if (IS_DEV) return `${path}-dev.png`;
+  return `${path}.png`;
+};
 export default {
-  name: IS_DEV ? "daily-notification (Dev)" : "daily-notification",
+  name: getAppName(),
   slug: "daily-notification",
   version: "1.0.0",
   orientation: "portrait",
-  icon: "./assets/images/icon.png",
+  icon: getAssetPath("./assets/images/icon"),
   scheme: "myapp",
   userInterfaceStyle: "automatic",
   splash: {
-    image: "./assets/images/splash.png",
+    image: getAssetPath("./assets/images/splash"),
     resizeMode: "contain",
     backgroundColor: "#ffffff",
   },
   ios: {
     supportsTablet: true,
-    bundleIdentifier: IS_DEV
-      ? "com.salvatorelaspata.dailynotification.dev"
-      : "com.salvatorelaspata.dailynotification",
+    bundleIdentifier: getUniqueIdentifier(),
   },
   android: {
-    package: IS_DEV
-      ? "com.salvatorelaspata.dailynotification.dev"
-      : "com.salvatorelaspata.dailynotification",
+    package: getUniqueIdentifier(),
     adaptiveIcon: {
-      foregroundImage: "./assets/images/adaptive-icon.png",
+      foregroundImage: getAssetPath("./assets/images/adaptive-icon"),
       backgroundColor: "#ffffff",
     },
   },
@@ -38,6 +52,20 @@ export default {
     "expo-localization",
     "expo-font",
     "expo-contacts",
+    [
+      "react-native-fbsdk-next",
+      {
+        appID: "590774426934850",
+        clientToken: "30dd25ec07b43f8aafd709bf4c109e9f",
+        displayName: "dayly-notification",
+        scheme: "fb590774426934850",
+        advertiserIDCollectionEnabled: false,
+        autoLogAppEventsEnabled: false,
+        isAutoInitEnabled: true,
+        iosUserTrackingPermission:
+          "This identifier will be used to deliver personalized ads to you.",
+      },
+    ],
   ],
   experiments: {
     typedRoutes: true,

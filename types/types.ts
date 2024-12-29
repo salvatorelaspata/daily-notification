@@ -33,3 +33,23 @@ export type Setting = {
   start_time?: string;
   end_time?: string;
 };
+export interface FacebookFriend {
+  id: string;
+  name: string;
+  birthday: Date;
+}
+
+export interface FacebookError {
+  message: string;
+  code?: string;
+}
+
+export interface UseFacebookFriendsReturn {
+  friends: FacebookFriend[];
+  loading: boolean;
+  error: FacebookError | null;
+  isLoggedIn: boolean;
+  handleLogin: () => Promise<void>;
+  handleLogout: () => void;
+  refreshFriends: () => Promise<void>;
+}
